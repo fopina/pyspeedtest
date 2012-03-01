@@ -60,7 +60,7 @@ def download():
 			m.select(1.0)
 	total_ms = (time() * 1000) - total_start_time
 	print 'Took %d ms to download %d bytes' % (total_ms, total_downloaded)
-	print 'Download speed: %f bps' % (total_downloaded * 1000 * 8 / total_ms)
+	print 'Download speed: ' + pretty_speed(total_downloaded * 8000 / total_ms)
 	
 def main():
 	download()
@@ -77,6 +77,14 @@ def init():
 	 	c.setopt(pycurl.CONNECTTIMEOUT, 30)
 	 	c.setopt(pycurl.TIMEOUT, 300)
 	 	m.handles.append(c)
+	
+def pretty_speed(speed):
+	units = [ 'bps', 'Kbps', 'Mbps', 'Gbps' ]
+	unit = 0
+	while speed >= 1024:
+		speed /= 1024
+		unit += 1
+	return str(speed) + ' ' + units[unit]
 
 init()
 
