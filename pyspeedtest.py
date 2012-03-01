@@ -13,7 +13,6 @@ from time import time
 
 HOST = 'http://speedtest.net.zon.pt'
 CONNECTIONS = 2
-m = None
 
 ###############
 
@@ -22,6 +21,8 @@ DOWNLOAD_FILES = [
 	('/speedtest/random500x500.jpg',505544),
 	('/speedtest/random1500x1500.jpg',4468241),
 ]
+
+m = None
 
 def ignore_data_cb(buf):
 	return len(buf)
