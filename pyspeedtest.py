@@ -9,6 +9,7 @@ TODO:
 import urllib, urllib2
 from time import time
 from random import random
+from threading import Thread
 
 ###############
 
@@ -37,10 +38,16 @@ def download():
 	total_start_time = time()
 	total_downloaded = 0
 	for (current_file, current_file_size) in DOWNLOAD_FILES:
+		threads = []
 		for run in range(RUNS):
 			total_downloaded += current_file_size
-			urllib.urlretrieve(HOST + current_file + '?x=' + str(int(time() * 1000)), '/dev/null')
-			printv('Run %d for %s finished' % (run, current_file))
+			thread = Thread(target=urllib.urlretrieve, args = (HOST + current_file + '?x=' + str(int(time() * 1000)), '/dev/null'))
+			thread.run_number = run
+			thread.start()
+			threads.append(thread)
+		for thread in threads:
+			thread.join()
+			printv('Run %d for %s finished' % (thread.run_number, current_file))
 	total_ms = (time() - total_start_time) * 1000
 	printv('Took %d ms to download %d bytes' % (total_ms, total_downloaded))
 	return (total_downloaded * 8000 / total_ms)
