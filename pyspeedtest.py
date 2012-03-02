@@ -2,14 +2,14 @@
 
 '''
 TODO:
-- threaded up/downloading (like before with pycurl)
+- improve upload() test to match speedtest.net flash app results
 - choose server based on latency (http://www.speedtest.net/speedtest-servers.php / http://SERVER/speedtest/latency.txt)
 '''
 
 import urllib, urllib2
 from time import time
 from random import random
-from threading import Thread
+from threading import Thread, current_thread
 
 ###############
 
@@ -52,6 +52,12 @@ def download():
 	printv('Took %d ms to download %d bytes' % (total_ms, total_downloaded))
 	return (total_downloaded * 8000 / total_ms)
 
+def uploadthread(req):
+	response = urllib2.urlopen(req)
+	reply = response.read()
+	self_thread = current_thread()
+	self_thread.uploaded = int(reply.split('=')[1])
+	
 def upload():
 	url = HOST + '/speedtest/upload.php?x=' + str(random())
 	total_start_time = time()
@@ -60,11 +66,16 @@ def upload():
 		values = {'content0' : open('/dev/random').read(current_file_size) }
 		data = urllib.urlencode(values)
 		req = urllib2.Request(url, data)
+		threads = []
 		for run in range(RUNS):
-			response = urllib2.urlopen(req)
-			reply = response.read()
-			total_uploaded += int(reply.split('=')[1])
-			printv('Run %d for %d bytes finished' % (run, current_file_size))
+			thread = Thread(target = uploadthread, kwargs = { 'req': req })
+			thread.run_number = run
+			thread.start()
+			threads.append(thread)
+		for thread in threads:
+			thread.join()
+			printv('Run %d for %d bytes finished' % (thread.run_number, thread.uploaded))
+			total_uploaded += thread.uploaded
 	total_ms = (time() - total_start_time) * 1000
 	printv('Took %d ms to upload %d bytes' % (total_ms, total_uploaded))
 	return (total_uploaded * 8000 / total_ms)
