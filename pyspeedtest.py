@@ -17,6 +17,8 @@ RUNS = 4
 
 ###############
 
+VERBOSE = 0
+
 DOWNLOAD_FILES = [
 	('/speedtest/random350x350.jpg',245388),
 	('/speedtest/random500x500.jpg',505544),
@@ -28,6 +30,9 @@ UPLOAD_FILES = [
 	493638
 ]
 
+def printv(msg):
+	if VERBOSE : print msg
+	
 def download():
 	total_start_time = time()
 	total_downloaded = 0
@@ -35,14 +40,11 @@ def download():
 		for run in range(RUNS):
 			total_downloaded += current_file_size
 			urllib.urlretrieve(HOST + current_file + '?x=' + str(int(time() * 1000)), '/dev/null')
-			print 'Run %d for %s finished' % (run, current_file)
+			printv('Run %d for %s finished' % (run, current_file))
 	total_ms = (time() - total_start_time) * 1000
-	print 'Took %d ms to download %d bytes' % (total_ms, total_downloaded)
-	print 'Download speed: ' + pretty_speed(total_downloaded * 8000 / total_ms)
+	printv('Took %d ms to download %d bytes' % (total_ms, total_downloaded))
+	return (total_downloaded * 8000 / total_ms)
 
-def create_data():
-	return "asd"
-	
 def upload():
 	url = HOST + '/speedtest/upload.php?x=' + str(random())
 	total_start_time = time()
@@ -55,14 +57,16 @@ def upload():
 			response = urllib2.urlopen(req)
 			reply = response.read()
 			total_uploaded += int(reply.split('=')[1])
-			print 'Run %d for %d bytes finished' % (run, current_file_size)
+			printv('Run %d for %d bytes finished' % (run, current_file_size))
 	total_ms = (time() - total_start_time) * 1000
-	print 'Took %d ms to upload %d bytes' % (total_ms, total_uploaded)
-	print 'Upload speed: ' + pretty_speed(total_uploaded * 8000 / total_ms)
+	printv('Took %d ms to upload %d bytes' % (total_ms, total_uploaded))
+	return (total_uploaded * 8000 / total_ms)
 	
 def main():
-	download()
-	upload()
+	global VERBOSE
+	VERBOSE = 1
+	print 'Download speed: ' + pretty_speed(download())
+	print 'Upload speed: ' + pretty_speed(upload())
 	
 def pretty_speed(speed):
 	units = [ 'bps', 'Kbps', 'Mbps', 'Gbps' ]
