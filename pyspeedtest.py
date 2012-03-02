@@ -9,7 +9,7 @@ TODO:
 import urllib, urllib2
 from time import time
 from random import random
-from threading import Thread, current_thread
+from threading import Thread, currentThread
 
 ###############
 
@@ -55,7 +55,7 @@ def download():
 def uploadthread(req):
 	response = urllib2.urlopen(req)
 	reply = response.read()
-	self_thread = current_thread()
+	self_thread = currentThread()
 	self_thread.uploaded = int(reply.split('=')[1])
 	
 def upload():
