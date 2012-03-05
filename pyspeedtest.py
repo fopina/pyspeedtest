@@ -112,7 +112,11 @@ def main():
 		elif o in ("-r", "--runs"):
 			RUNS = a
 		elif o in ("-m", "--mode"):
-			mode = a
+			try:
+				mode = int(a)
+			except ValueError:
+				print 'Bad mode value'
+				sys.exit(2)
 	if mode & 1 == 1:
 		print 'Download speed: ' + pretty_speed(download())
 	if mode & 2 == 2:
