@@ -7,6 +7,7 @@ TODO:
 '''
 
 import urllib, urllib2
+import getopt, sys
 from time import time
 from random import random
 from threading import Thread, currentThread
@@ -14,7 +15,7 @@ from threading import Thread, currentThread
 ###############
 
 HOST = 'http://speedtest-po.vodafone.pt'
-RUNS = 4
+RUNS = 2
 
 ###############
 
@@ -79,10 +80,35 @@ def upload():
 	total_ms = (time() - total_start_time) * 1000
 	printv('Took %d ms to upload %d bytes' % (total_ms, total_uploaded))
 	return (total_uploaded * 8000 / total_ms)
-	
+
+def usage():
+	print '''
+usage: pyspeedtest.py [-h] [-v] [-r N]
+
+Test your bandwidth speed using Speedtest.net servers.
+
+optional arguments:
+ -h, --help         show this help message and exit
+ -v                 enabled verbose mode
+ -r N, --runs=N     use N runs (default is 2).
+'''
+		
 def main():
-	global VERBOSE
-	VERBOSE = 1
+	global VERBOSE, RUNS
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], "hr:v", ["help", "runs="])
+	except getopt.GetoptError, err:
+		print str(err)
+		usage()
+		sys.exit(2)
+	for o, a in opts:
+		if o == "-v":
+			VERBOSE = 1
+		elif o in ("-h", "--help"):
+			usage()
+			sys.exit()
+		elif o in ("-r", "--runs"):
+			RUNS = a
 	print 'Download speed: ' + pretty_speed(download())
 	print 'Upload speed: ' + pretty_speed(upload())
 	
