@@ -107,6 +107,21 @@ def upload():
 	printv('Took %d ms to upload %d bytes' % (total_ms, total_uploaded))
 	return (total_uploaded * 8000 / total_ms)
 
+def ping(server):
+	connection = httplib.HTTPConnection(server)
+	connection.set_debuglevel(HTTPDEBUG)
+	connection.connect()
+	total_start_time = time()
+	for i in range(4):
+		connection.request('GET', '/speedtest/latency.txt?x=' + str(random.random()), None, { 'Connection': 'Keep-Alive'})
+		response = connection.getresponse()
+		response.read()
+	total_ms = (time() - total_start_time) * 250 # * 1000 / number of tries (4) = 250
+	connection.close()
+	printv('Latency for %s - %d' % (server, total_ms))
+	return total_ms
+
+
 def usage():
 	print '''
 usage: pyspeedtest.py [-h] [-v] [-r N] [-m M] [-d L]
@@ -117,13 +132,13 @@ optional arguments:
  -h, --help         show this help message and exit
  -v                 enabled verbose mode
  -r N, --runs=N     use N runs (default is 2).
- -m M, --mode=M     test mode: 1 - download only, 2 - upload only, 3 - both (default).
+ -m M, --mode=M     test mode: 1 - download, 2 - upload, 4 - ping, 1 + 2 + 4 = 7 - all (default).
  -d L, --debug=L    set httpconnection debug level (default is 0).
 '''
 		
 def main():
 	global VERBOSE, RUNS, HTTPDEBUG
-	mode = 3
+	mode = 7
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], "hr:vm:d:", ["help", "runs=","mode=","debug="])
 	except getopt.GetoptError, err:
@@ -155,6 +170,8 @@ def main():
 				print 'Bad debug value'
 				sys.exit(2)
 
+	if mode & 4 == 4:
+		print 'Ping: %d ms' % ping(HOST)
 	if mode & 1 == 1:
 		print 'Download speed: ' + pretty_speed(download())
 	if mode & 2 == 2:
