@@ -2,14 +2,13 @@
 
 '''
 TODO:
-- improve upload() test to match speedtest.net flash app results (dns cache, keep-alive?)
 - choose server based on latency (http://www.speedtest.net/speedtest-servers.php / http://SERVER/speedtest/latency.txt)
 '''
 
-import urllib, urllib2, httplib
+import urllib, httplib
 import getopt, sys
 from time import time
-from random import random
+import random
 from threading import Thread, currentThread
 
 ###############
@@ -67,9 +66,9 @@ def download():
 	printv('Took %d ms to download %d bytes' % (total_ms, total_downloaded))
 	return (total_downloaded * 8000 / total_ms)
 
-def uploadthread(connection, req):
-	url = '/speedtest/upload.php?x=' + str(random())
-	connection.request('POST', url, req, {'Connection': 'Keep-Alive', 'Content-Type': 'application/x-www-form-urlencoded'})
+def uploadthread(connection, data):
+	url = '/speedtest/upload.php?x=' + str(random.random())
+	connection.request('POST', url, data, {'Connection': 'Keep-Alive', 'Content-Type': 'application/x-www-form-urlencoded'})
 	response = connection.getresponse()
 	reply = response.read()
 	self_thread = currentThread()
@@ -82,12 +81,16 @@ def upload():
 		connection.set_debuglevel(HTTPDEBUG)
 		connection.connect()
 		connections.append(connection)
-	total_uploaded = 0
-	
-	total_start_time = time()
+		
+	post_data = []
+	ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	for current_file_size in UPLOAD_FILES:
-		values = {'content0' : open('/dev/random').read(current_file_size) }
-		data = urllib.urlencode(values)
+		values = {'content0' : ''.join(random.choice(ALPHABET) for i in range(current_file_size)) }
+		post_data.append(urllib.urlencode(values))
+		
+	total_uploaded = 0
+	total_start_time = time()
+	for data in post_data:
 		threads = []
 		for run in range(RUNS):
 			thread = Thread(target = uploadthread, args = (connections[run], data))
