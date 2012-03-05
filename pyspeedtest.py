@@ -6,7 +6,7 @@ TODO:
 - choose server based on latency (http://www.speedtest.net/speedtest-servers.php / http://SERVER/speedtest/latency.txt)
 '''
 
-import urllib, urllib2
+import urllib, urllib2, httplib
 import getopt, sys
 from time import time
 from random import random
@@ -14,7 +14,7 @@ from threading import Thread, currentThread
 
 ###############
 
-HOST = 'http://speedtest-po.vodafone.pt'
+HOST = 'speedtest-po.vodafone.pt'
 RUNS = 2
 
 ###############
@@ -22,9 +22,9 @@ RUNS = 2
 VERBOSE = 0
 
 DOWNLOAD_FILES = [
-	('/speedtest/random350x350.jpg',245388),
-	('/speedtest/random500x500.jpg',505544),
-	('/speedtest/random1500x1500.jpg',4468241),
+	'/speedtest/random350x350.jpg',
+	'/speedtest/random500x500.jpg',
+	'/speedtest/random1500x1500.jpg',
 ]
 
 UPLOAD_FILES = [
@@ -35,21 +35,36 @@ UPLOAD_FILES = [
 def printv(msg):
 	if VERBOSE : print msg
 	
+def downloadthread(connection, url):
+	connection.putrequest('GET', url)
+	connection.putheader('Connection','Keep-Alive')
+	connection.endheaders()
+	response = connection.getresponse()
+	self_thread = currentThread()
+	self_thread.downloaded = len(response.read())
+	
 def download():
-	total_start_time = time()
 	total_downloaded = 0
-	for (current_file, current_file_size) in DOWNLOAD_FILES:
+	connections = []
+	for run in range(RUNS):
+		connection = httplib.HTTPConnection(HOST)
+		connection.connect()
+		connections.append(connection)
+	total_start_time = time()
+	for current_file in DOWNLOAD_FILES:
 		threads = []
 		for run in range(RUNS):
-			total_downloaded += current_file_size
-			thread = Thread(target=urllib.urlretrieve, args = (HOST + current_file + '?x=' + str(int(time() * 1000)), '/dev/null'))
+			thread = Thread(target = downloadthread, args = (connections[run], current_file + '?x=' + str(int(time() * 1000))))
 			thread.run_number = run
 			thread.start()
 			threads.append(thread)
 		for thread in threads:
 			thread.join()
+			total_downloaded += thread.downloaded
 			printv('Run %d for %s finished' % (thread.run_number, current_file))
 	total_ms = (time() - total_start_time) * 1000
+	for connection in connections:
+		connection.close()
 	printv('Took %d ms to download %d bytes' % (total_ms, total_downloaded))
 	return (total_downloaded * 8000 / total_ms)
 
@@ -60,7 +75,7 @@ def uploadthread(req):
 	self_thread.uploaded = int(reply.split('=')[1])
 	
 def upload():
-	url = HOST + '/speedtest/upload.php?x=' + str(random())
+	url = 'http://' + HOST + '/speedtest/upload.php?x=' + str(random())
 	total_start_time = time()
 	total_uploaded = 0
 	for current_file_size in UPLOAD_FILES:
@@ -110,7 +125,11 @@ def main():
 			usage()
 			sys.exit()
 		elif o in ("-r", "--runs"):
-			RUNS = a
+			try:
+				RUNS = int(a)
+			except ValueError:
+				print 'Bad runs value'
+				sys.exit(2)
 		elif o in ("-m", "--mode"):
 			try:
 				mode = int(a)
