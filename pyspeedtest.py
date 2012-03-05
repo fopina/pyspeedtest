@@ -2,7 +2,7 @@
 
 '''
 TODO:
-- improve upload() test to match speedtest.net flash app results
+- improve upload() test to match speedtest.net flash app results (dns cache, keep-alive?)
 - choose server based on latency (http://www.speedtest.net/speedtest-servers.php / http://SERVER/speedtest/latency.txt)
 '''
 
@@ -83,7 +83,7 @@ def upload():
 
 def usage():
 	print '''
-usage: pyspeedtest.py [-h] [-v] [-r N]
+usage: pyspeedtest.py [-h] [-v] [-r N] [-m N]
 
 Test your bandwidth speed using Speedtest.net servers.
 
@@ -91,12 +91,14 @@ optional arguments:
  -h, --help         show this help message and exit
  -v                 enabled verbose mode
  -r N, --runs=N     use N runs (default is 2).
+ -m N, --mode=N     test mode: 1 - download only, 2 - upload only, 3 - both (default)
 '''
 		
 def main():
 	global VERBOSE, RUNS
+	mode = 3
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hr:v", ["help", "runs="])
+		opts, args = getopt.getopt(sys.argv[1:], "hr:vm:", ["help", "runs=","mode="])
 	except getopt.GetoptError, err:
 		print str(err)
 		usage()
@@ -109,8 +111,12 @@ def main():
 			sys.exit()
 		elif o in ("-r", "--runs"):
 			RUNS = a
-	print 'Download speed: ' + pretty_speed(download())
-	print 'Upload speed: ' + pretty_speed(upload())
+		elif o in ("-m", "--mode"):
+			mode = a
+	if mode & 1 == 1:
+		print 'Download speed: ' + pretty_speed(download())
+	if mode & 2 == 2:
+		print 'Upload speed: ' + pretty_speed(upload())
 	
 def pretty_speed(speed):
 	units = [ 'bps', 'Kbps', 'Mbps', 'Gbps' ]
