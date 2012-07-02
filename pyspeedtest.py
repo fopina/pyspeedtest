@@ -164,7 +164,9 @@ def chooseserver():
 		bisect.insort_left(sorted_server_list,(distance, server[0]))
 	best_server = (999999, '')
 	for server in sorted_server_list[:10]:
+		print server[1]
 		m = re.search('http://([^/]+)/speedtest/upload\.php',server[1])
+		if not m : continue
 		server_host = m.groups()[0]
 		latency = ping(server_host)
 		if latency < best_server[0]:
