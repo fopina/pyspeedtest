@@ -1,4 +1,3 @@
 include LICENSE.md
 include README.md
-include pyspeedtest.py
 recursive-include docs *
