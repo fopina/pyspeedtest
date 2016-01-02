@@ -51,6 +51,12 @@ pyspeedtest --debug=0 --mode=7 --runs=2 |& grep -qE $'^Using server: .*\nDownloa
 ! pyspeedtest -x
 ! pyspeedtest --xxx
 
+# test for bad debug levels
+for arg in -d --debug; do
+    ! output=$(pyspeedtest "${arg}" xxx 2>&1)
+    [[ $output = 'Bad debug level value' ]]
+done
+
 # test for bad modes
 for badmode in -1 0 8 9 10 11 12 13 14 15; do
     for arg in -m --mode; do
