@@ -24,6 +24,7 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
+__program__ = 'pyspeedtest'
 __version__ = '1.1'
 
 

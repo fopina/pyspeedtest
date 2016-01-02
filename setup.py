@@ -1,12 +1,12 @@
 import os
 from setuptools import setup
-from pyspeedtest import __version__
+from pyspeedtest import __program__, __version__
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='pyspeedtest',
+    name=__program__,
     version=__version__,
     py_modules=['pyspeedtest'],
     scripts=['bin/pyspeedtest'],
