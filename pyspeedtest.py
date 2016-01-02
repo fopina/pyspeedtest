@@ -101,7 +101,7 @@ class SpeedTest(object):
             connections.append(connection)
 
         post_data = []
-        ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
         for current_file_size in SpeedTest.UPLOAD_FILES:
             values = {'content0': ''.join(random.choice(ALPHABET) for i in range(current_file_size))}
             post_data.append(urlencode(values))
@@ -167,7 +167,7 @@ class SpeedTest(object):
         m = re.search('<client ip="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
         location = None
         if m is None:
-            self._printv("Failed to retrieve coordinates")
+            self._printv('Failed to retrieve coordinates')
             return None
         location = m.groups()
         self._printv('Your IP: %s\nYour latitude: %s\nYour longitude: %s' % location)
@@ -219,13 +219,13 @@ def parseargs():
     try:
         opts, args = getopt.getopt(
             sys.argv[1:],
-            "hr:vm:d:s:",
+            'hr:vm:d:s:',
             [
-                "help",
-                "runs=",
-                "mode=",
-                "debug=",
-                "server=",
+                'help',
+                'runs=',
+                'mode=',
+                'debug=',
+                'server=',
             ]
         )
     except getopt.GetoptError as err:
@@ -245,30 +245,30 @@ def main():
     runs = 2
 
     for o, a in opts:
-        if o == "-v":
+        if o == '-v':
             speedtest.verbose = True
-        elif o in ("-h", "--help"):
+        elif o in ('-h', '--help'):
             usage()
             sys.exit()
-        elif o in ("-r", "--runs"):
+        elif o in ('-r', '--runs'):
             try:
                 runs = int(a)
             except ValueError:
                 print('Bad runs value')
                 sys.exit(2)
-        elif o in ("-m", "--mode"):
+        elif o in ('-m', '--mode'):
             try:
                 mode = int(a)
             except ValueError:
                 print('Bad mode value')
                 sys.exit(2)
-        elif o in ("-d", "--debug"):
+        elif o in ('-d', '--debug'):
             try:
                 speedtest.http_debug = int(a)
             except ValueError:
                 print('Bad debug value')
                 sys.exit(2)
-        elif o == "-s":
+        elif o == '-s':
             speedtest.host = a
 
     if mode & 4 == 4 and speedtest.host is not None:
