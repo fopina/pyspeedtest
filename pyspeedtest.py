@@ -257,7 +257,7 @@ def parseargs():
                 'debug=',
                 'mode=',
                 'runs=',
-                'server=',
+                'server='
             ]
         )
     except getopt.GetoptError as err:
