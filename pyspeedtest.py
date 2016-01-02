@@ -6,6 +6,7 @@ import bisect
 import getopt
 import random
 import re
+import string
 import sys
 
 from math import sqrt
@@ -101,7 +102,7 @@ class SpeedTest(object):
             connections.append(connection)
 
         post_data = []
-        alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        alphabet = string.digits + string.ascii_letters
         for current_file_size in SpeedTest.UPLOAD_FILES:
             values = {'content0': ''.join(random.choice(alphabet) for i in range(current_file_size))}
             post_data.append(urlencode(values))
