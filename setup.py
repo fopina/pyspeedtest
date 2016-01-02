@@ -8,7 +8,6 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 setup(
     name=__program__,
     version=__version__,
-    scripts=['bin/pyspeedtest'],
     license='MIT',
     description='Speedtest.net python script',
     url='https://github.com/fopina/pyspeedtest',
@@ -16,6 +15,9 @@ setup(
     author='Filipe Pina',
     author_email='fopina@skmobi.com',
     py_modules=['pyspeedtest'],
+    entry_points={
+        'console_scripts': ['pyspeedtest=pyspeedtest:main']
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
