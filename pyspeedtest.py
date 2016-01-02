@@ -2,16 +2,17 @@
 
 __version__ = '1.1'
 
-import urllib
-import httplib
-import getopt
-import sys
-from time import time
-import random
-from threading import Thread, currentThread
-from math import pow, sqrt
 import bisect
+import getopt
+import httplib
+import random
 import re
+import sys
+import urllib
+
+from math import pow, sqrt
+from threading import Thread, currentThread
+from time import time
 
 
 class SpeedTest(object):
