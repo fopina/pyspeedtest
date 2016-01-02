@@ -2,6 +2,11 @@ import os
 from setuptools import setup
 from pyspeedtest import __program__, __version__
 
+
+def read(filename):
+    with open(filename) as f:
+        return f.read()
+
 # allow setup.py to be run from any path
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -10,6 +15,7 @@ setup(
     version=__version__,
     license='MIT',
     description='Speedtest.net python script',
+    long_description=read('README.rst'),
     url='https://github.com/fopina/pyspeedtest',
     download_url='https://github.com/fopina/pyspeedtest/tarball/v%s' % __version__,
     author='Filipe Pina',
