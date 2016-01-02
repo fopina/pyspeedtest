@@ -213,7 +213,8 @@ class SpeedTest(object):
         best_server = (999999, '')
         for server in sorted_server_list[:10]:
             self._printv(server[1])
-            match = re.search(r'http://([^/]+)/speedtest/upload\.php', server[1])
+            match = re.search(
+                r'http://([^/]+)/speedtest/upload\.php', server[1])
             if match is None:
                 continue
             server_host = match.groups()[0]
