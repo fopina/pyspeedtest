@@ -222,8 +222,12 @@ class SpeedTest(object):
         return best_server[1]
 
 
+def error(*args):
+    print(*args, file=sys.stderr)
+
+
 def usage():
-    print('''\
+    return '''\
 version: %s
 
 usage: %s [-h] [-v] [-r N] [-m M] [-d L]
@@ -240,7 +244,7 @@ optional arguments:
                                1 + 2 + 4 = 7 - all (default)
   -d L, --debug=L    set http connection debug level (default is 0)
   -s H, --server=H   use specific server
-''' % (__version__, os.path.basename(sys.argv[0])))
+''' % (__version__, os.path.basename(sys.argv[0]))
 
 
 def parseargs():
@@ -257,9 +261,9 @@ def parseargs():
             ]
         )
     except getopt.GetoptError as err:
-        print(err)
-        print()
-        usage()
+        error(err)
+        error()
+        error(usage())
         sys.exit(1)
     else:
         return opts
@@ -276,25 +280,25 @@ def main():
         if opt == '-v':
             speedtest.verbose = True
         elif opt in ('-h', '--help'):
-            usage()
+            print(usage())
             sys.exit()
         elif opt in ('-r', '--runs'):
             try:
                 runs = int(arg)
             except ValueError:
-                print('Bad runs value')
+                error('Bad runs value')
                 sys.exit(1)
         elif opt in ('-m', '--mode'):
             try:
                 mode = int(arg)
             except ValueError:
-                print('Bad mode value')
+                error('Bad mode value')
                 sys.exit(1)
         elif opt in ('-d', '--debug'):
             try:
                 speedtest.http_debug = int(arg)
             except ValueError:
-                print('Bad debug value')
+                error('Bad debug value')
                 sys.exit(1)
         elif opt == '-s':
             speedtest.host = arg
