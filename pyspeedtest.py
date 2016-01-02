@@ -8,7 +8,7 @@ import random
 import re
 import sys
 
-from math import pow, sqrt
+from math import sqrt
 from threading import currentThread, Thread
 from time import time
 
