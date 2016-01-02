@@ -311,10 +311,10 @@ def main():
         print('Ping: %d ms' % speedtest.ping())
 
     if mode & 1 == 1:
-        print('Download speed: ' + pretty_speed(speedtest.download(runs)))
+        print('Download speed: %s' % pretty_speed(speedtest.download(runs)))
 
     if mode & 2 == 2:
-        print('Upload speed: ' + pretty_speed(speedtest.upload(runs)))
+        print('Upload speed: %s' % pretty_speed(speedtest.upload(runs)))
 
 
 def pretty_speed(speed):
