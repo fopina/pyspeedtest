@@ -6,9 +6,6 @@
 # immediately exit if any command has a non-zero exit status
 set -e
 
-# display the active Python distribution version
-printf '%s\n' "$(python --version)"
-
 # package the project
 python setup.py sdist
 
