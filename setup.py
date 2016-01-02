@@ -14,7 +14,7 @@ setup(
     name=__program__,
     version=__version__,
     license='MIT',
-    description='Speedtest.net python script',
+    description='Speedtest.net Python script',
     long_description=read('README.rst'),
     url='https://github.com/fopina/pyspeedtest',
     download_url='https://github.com/fopina/pyspeedtest/tarball/v%s' % __version__,
