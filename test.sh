@@ -6,6 +6,9 @@
 # immediately exit if any command has a non-zero exit status
 set -e
 
+# print shell input lines as they are read
+set -v
+
 # package the project
 python setup.py sdist
 
