@@ -14,4 +14,5 @@ python:
 script:
   - python setup.py sdist
   - python setup.py install
-  - pyspeedtest
+  - pyspeedtest -h
+  - pyspeedtest -v
