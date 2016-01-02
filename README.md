@@ -5,7 +5,7 @@ Python script to test network bandwidth using Speedtest.net servers
 Usage
 -----
 
-	usage: pyspeedtest.py [-h] [-v] [-r N] [-m M] [-d L]
+	usage: pyspeedtest [-h] [-v] [-r N] [-m M] [-d L]
 
 	Test your bandwidth speed using Speedtest.net servers.
 

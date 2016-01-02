@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import bisect
 import getopt
+import os
 import random
 import re
 import string
@@ -226,7 +227,7 @@ def usage():
     print('''\
 version: %s
 
-usage: pyspeedtest.py [-h] [-v] [-r N] [-m M] [-d L]
+usage: %s [-h] [-v] [-r N] [-m M] [-d L]
 
 Test your bandwidth speed using Speedtest.net servers.
 
@@ -237,7 +238,7 @@ optional arguments:
  -m M, --mode=M     test mode: 1 - download, 2 - upload, 4 - ping, 1 + 2 + 4 = 7 - all (default).
  -d L, --debug=L    set httpconnection debug level (default is 0).
  -s H, --server=H   use specific server
-''' % __version__)
+''' % (__version__, os.path.basename(sys.argv[0])))
 
 
 def parseargs():
