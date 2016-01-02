@@ -62,5 +62,5 @@ done
 # test for bad runs
 for arg in -r --runs; do
     ! output=$(pyspeedtest "${arg}" xxx 2>&1)
-    [[ $output = 'Bad debug value' ]]
+    [[ $output = 'Bad runs value' ]]
 done
