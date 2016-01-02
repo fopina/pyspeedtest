@@ -8,17 +8,19 @@ Usage
 
 ::
 
-    usage: pyspeedtest [-h] [-v] [-r N] [-m M] [-d L]
+    usage: pyspeedtest [OPTION]...
 
     Test your bandwidth speed using Speedtest.net servers.
 
     optional arguments:
-      -h, --help         show this help message and exit
-      -v                 enabled verbose mode
-      -r N, --runs=N     use N runs (default is 2)
+
+      -d L, --debug=L    set http connection debug level (default is 0)
       -m M, --mode=M     test mode: 1 - download
                                     2 - upload
                                     4 - ping
                                     1 + 2 + 4 = 7 - all (default)
-      -d L, --debug=L    set http connection debug level (default is 0)
+      -r N, --runs=N     use N runs (default is 2)
       -s H, --server=H   use specific server
+      -v                 enabled verbose mode
+
+      -h,   --help       show this help message and exit
