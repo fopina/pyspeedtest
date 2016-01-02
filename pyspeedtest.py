@@ -164,7 +164,7 @@ class SpeedTest(object):
         connection.request('GET', '/speedtest-config.php?x=' + str(now), None, extra_headers)
         response = connection.getresponse()
         reply = response.read().decode('utf-8')
-        m = re.search('<client ip="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
+        m = re.search(r'<client ip="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
         location = None
         if m is None:
             self._printv('Failed to retrieve coordinates')
@@ -174,7 +174,7 @@ class SpeedTest(object):
         connection.request('GET', '/speedtest-servers.php?x=' + str(now), None, extra_headers)
         response = connection.getresponse()
         reply = response.read().decode('utf-8')
-        server_list = re.findall('<server url="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
+        server_list = re.findall(r'<server url="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
         my_lat = float(location[1])
         my_lon = float(location[2])
         sorted_server_list = []
@@ -186,7 +186,7 @@ class SpeedTest(object):
         best_server = (999999, '')
         for server in sorted_server_list[:10]:
             self._printv(server[1])
-            m = re.search('http://([^/]+)/speedtest/upload\.php', server[1])
+            m = re.search(r'http://([^/]+)/speedtest/upload\.php', server[1])
             if not m:
                 continue
             server_host = m.groups()[0]
