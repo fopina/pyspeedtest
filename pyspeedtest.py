@@ -218,7 +218,7 @@ optional arguments:
 
 def parseargs():
     try:
-        opts, args = getopt.getopt(
+        opts, _ = getopt.getopt(
             sys.argv[1:],
             'hr:vm:d:s:',
             [
@@ -235,11 +235,11 @@ def parseargs():
         usage()
         sys.exit(1)
     else:
-        return (opts, args)
+        return opts
 
 
 def main():
-    opts, args = parseargs()
+    opts = parseargs()
     speedtest = SpeedTest()
 
     mode = 7
