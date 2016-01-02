@@ -188,7 +188,7 @@ class SpeedTest(object):
         for server in sorted_server_list[:10]:
             self._printv(server[1])
             m = re.search(r'http://([^/]+)/speedtest/upload\.php', server[1])
-            if not m:
+            if m is None:
                 continue
             server_host = m.groups()[0]
             latency = self.ping(server_host)
