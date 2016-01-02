@@ -33,5 +33,5 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5'
     ],
-    keywords=['speed', 'test', 'bandwidth']
+    keywords=['speedtest.net', 'speedtest', 'speed', 'test', 'bandwidth']
 )
