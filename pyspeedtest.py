@@ -138,7 +138,7 @@ class SpeedTest(object):
         connection.connect()
         times = []
         worst = 0
-        for i in range(5):
+        for _ in range(5):
             total_start_time = time()
             connection.request('GET', '/speedtest/latency.txt?x=' + str(random.random()), None, {'Connection': 'Keep-Alive'})
             response = connection.getresponse()
