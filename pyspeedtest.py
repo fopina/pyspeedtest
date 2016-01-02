@@ -72,7 +72,7 @@ class SpeedTest(object):
                 thread = Thread(
                     target=self.downloadthread,
                     args=(connections[run],
-                          '%s?x=%d' % (current_file, int(time()) * 1000)))
+                          '%s?x=%d' % (current_file, int(time() * 1000))))
                 thread.run_number = run
                 thread.start()
                 threads.append(thread)
