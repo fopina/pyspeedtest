@@ -12,4 +12,4 @@ python:
   - "nightly" # currently points to 3.6-dev
 
 script:
-  - ./test.sh
+  - bash ./test.sh
