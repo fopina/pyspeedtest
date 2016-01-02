@@ -251,12 +251,12 @@ def parseargs():
     try:
         opts, _ = getopt.getopt(
             sys.argv[1:],
-            'hr:vm:d:s:',
+            'hvd:m:r:s:',
             [
                 'help',
-                'runs=',
-                'mode=',
                 'debug=',
+                'mode=',
+                'runs=',
                 'server=',
             ]
         )
