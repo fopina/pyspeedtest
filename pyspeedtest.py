@@ -101,9 +101,9 @@ class SpeedTest(object):
             connections.append(connection)
 
         post_data = []
-        ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
         for current_file_size in SpeedTest.UPLOAD_FILES:
-            values = {'content0': ''.join(random.choice(ALPHABET) for i in range(current_file_size))}
+            values = {'content0': ''.join(random.choice(alphabet) for i in range(current_file_size))}
             post_data.append(urlencode(values))
 
         total_uploaded = 0
