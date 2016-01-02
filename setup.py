@@ -13,7 +13,7 @@ setup(
     license='MIT',
     description='Speedtest.net python script',
     url='https://github.com/fopina/pyspeedtest',
-    download_url='https://github.com/fopina/pyspeedtest/tarball/v' + __version__,
+    download_url='https://github.com/fopina/pyspeedtest/tarball/v%s' % __version__,
     author='Filipe Pina',
     author_email='fopina@skmobi.com',
     classifiers=[
