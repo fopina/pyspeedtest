@@ -1,16 +1,26 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import bisect
 import getopt
-import httplib
 import random
 import re
 import sys
-import urllib
 
 from math import pow, sqrt
 from threading import Thread, currentThread
 from time import time
+
+try:
+    from httplib import HTTPConnection
+except ImportError:
+    from http.client import HTTPConnection
+
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
 
 __version__ = '1.1'
 
@@ -34,7 +44,7 @@ class SpeedTest(object):
 
     def _printv(self, msg):
         if self.verbose:
-            print msg
+            print(msg)
 
     def downloadthread(self, connection, url):
         connection.request('GET', url, None, {'Connection': 'Keep-Alive'})
@@ -49,7 +59,7 @@ class SpeedTest(object):
         total_downloaded = 0
         connections = []
         for run in range(runs):
-            connection = httplib.HTTPConnection(self.host)
+            connection = HTTPConnection(self.host)
             connection.set_debuglevel(self.http_debug)
             connection.connect()
             connections.append(connection)
@@ -75,7 +85,7 @@ class SpeedTest(object):
         url = '/speedtest/upload.php?x=' + str(random.random())
         connection.request('POST', url, data, {'Connection': 'Keep-Alive', 'Content-Type': 'application/x-www-form-urlencoded'})
         response = connection.getresponse()
-        reply = response.read()
+        reply = response.read().decode('utf-8')
         self_thread = currentThread()
         self_thread.uploaded = int(reply.split('=')[1])
 
@@ -85,7 +95,7 @@ class SpeedTest(object):
 
         connections = []
         for run in range(runs):
-            connection = httplib.HTTPConnection(self.host)
+            connection = HTTPConnection(self.host)
             connection.set_debuglevel(self.http_debug)
             connection.connect()
             connections.append(connection)
@@ -94,7 +104,7 @@ class SpeedTest(object):
         ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         for current_file_size in SpeedTest.UPLOAD_FILES:
             values = {'content0': ''.join(random.choice(ALPHABET) for i in range(current_file_size))}
-            post_data.append(urllib.urlencode(values))
+            post_data.append(urlencode(values))
 
         total_uploaded = 0
         total_start_time = time()
@@ -122,7 +132,7 @@ class SpeedTest(object):
         if server is None:
             raise Exception('No server specified')
 
-        connection = httplib.HTTPConnection(server)
+        connection = HTTPConnection(server)
         connection.set_debuglevel(self.http_debug)
         connection.connect()
         times = []
@@ -143,7 +153,7 @@ class SpeedTest(object):
         return total_ms
 
     def chooseserver(self):
-        connection = httplib.HTTPConnection('www.speedtest.net')
+        connection = HTTPConnection('www.speedtest.net')
         connection.set_debuglevel(self.http_debug)
         connection.connect()
         now = int(time() * 1000)
@@ -153,7 +163,7 @@ class SpeedTest(object):
         }
         connection.request('GET', '/speedtest-config.php?x=' + str(now), None, extra_headers)
         response = connection.getresponse()
-        reply = response.read()
+        reply = response.read().decode('utf-8')
         m = re.search('<client ip="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
         location = None
         if m is None:
@@ -163,7 +173,7 @@ class SpeedTest(object):
         self._printv('Your IP: %s\nYour latitude: %s\nYour longitude: %s' % location)
         connection.request('GET', '/speedtest-servers.php?x=' + str(now), None, extra_headers)
         response = connection.getresponse()
-        reply = response.read()
+        reply = response.read().decode('utf-8')
         server_list = re.findall('<server url="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
         my_lat = float(location[1])
         my_lon = float(location[2])
@@ -183,12 +193,12 @@ class SpeedTest(object):
             latency = self.ping(server_host)
             if latency < best_server[0]:
                 best_server = (latency, server_host)
-        print 'Using server: ' + best_server[1]
+        print('Using server: ' + best_server[1])
         return best_server[1]
 
 
 def usage():
-    print '''\
+    print('''\
 version: %s
 
 usage: pyspeedtest.py [-h] [-v] [-r N] [-m M] [-d L]
@@ -202,7 +212,7 @@ optional arguments:
  -m M, --mode=M     test mode: 1 - download, 2 - upload, 4 - ping, 1 + 2 + 4 = 7 - all (default).
  -d L, --debug=L    set httpconnection debug level (default is 0).
  -s H, --server=H   use specific server
-''' % __version__
+''' % __version__)
 
 
 def parseargs():
@@ -218,8 +228,8 @@ def parseargs():
                 "server=",
             ]
         )
-    except getopt.GetoptError, err:
-        print str(err)
+    except getopt.GetoptError as err:
+        print(str(err))
         usage()
         sys.exit(2)
     else:
@@ -243,31 +253,31 @@ def main():
             try:
                 runs = int(a)
             except ValueError:
-                print 'Bad runs value'
+                print('Bad runs value')
                 sys.exit(2)
         elif o in ("-m", "--mode"):
             try:
                 mode = int(a)
             except ValueError:
-                print 'Bad mode value'
+                print('Bad mode value')
                 sys.exit(2)
         elif o in ("-d", "--debug"):
             try:
                 speedtest.http_debug = int(a)
             except ValueError:
-                print 'Bad debug value'
+                print('Bad debug value')
                 sys.exit(2)
         elif o == "-s":
             speedtest.host = a
 
     if mode & 4 == 4 and speedtest.host is not None:
-        print 'Ping: %d ms' % speedtest.ping()
+        print('Ping: %d ms' % speedtest.ping())
 
     if mode & 1 == 1:
-        print 'Download speed: ' + pretty_speed(speedtest.download(runs))
+        print('Download speed: ' + pretty_speed(speedtest.download(runs)))
 
     if mode & 2 == 2:
-        print 'Upload speed: ' + pretty_speed(speedtest.upload(runs))
+        print('Upload speed: ' + pretty_speed(speedtest.upload(runs)))
 
 
 def pretty_speed(speed):
