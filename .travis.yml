@@ -20,12 +20,12 @@ script:
   - pyspeedtest
   - pyspeedtest -v
   - pyspeedtest --verbose
-  - pyspeedtest -d 1
-  - pyspeedtest --debug=1
-  - pyspeedtest -d 2
-  - pyspeedtest --debug=2
-  - pyspeedtest -d 3
-  - pyspeedtest --debug=3
+  - pyspeedtest -d 1 &>/dev/null
+  - pyspeedtest --debug=1 &>/dev/null
+  - pyspeedtest -d 2 &>/dev/null
+  - pyspeedtest --debug=2 &>/dev/null
+  - pyspeedtest -d 3 &>/dev/null
+  - pyspeedtest --debug=3 &>/dev/null
   - pyspeedtest -r 1
   - pyspeedtest --runs=1
   - pyspeedtest -r 3
