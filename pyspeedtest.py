@@ -13,6 +13,7 @@ import sys
 
 from math import sqrt
 from threading import currentThread, Thread
+from textwrap import dedent
 from time import time
 
 try:
@@ -228,26 +229,31 @@ def error(*args):
 
 
 def usage():
-    return '''\
-version: %s
+    return dedent('''\
+        usage: %s [OPTION]...
 
-usage: %s [OPTION]...
+        Test your bandwidth speed using Speedtest.net servers.
 
-Test your bandwidth speed using Speedtest.net servers.
+        optional arguments:
 
-optional arguments:
+          -d L, --debug=L    set http connection debug level (default is 0)
+          -m M, --mode=M     test mode: 1 - download
+                                        2 - upload
+                                        4 - ping
+                                        1 + 2 + 4 = 7 - all (default)
+          -r N, --runs=N     use N runs (default is 2)
+          -s H, --server=H   use specific server
+          -v,   --verbose    enabled verbose mode
 
-  -d L, --debug=L    set http connection debug level (default is 0)
-  -m M, --mode=M     test mode: 1 - download
-                                2 - upload
-                                4 - ping
-                                1 + 2 + 4 = 7 - all (default)
-  -r N, --runs=N     use N runs (default is 2)
-  -s H, --server=H   use specific server
-  -v,   --verbose    enabled verbose mode
+          -h,   --help       show this help message and exit
+                --version    output version information and exit
+        ''' % __script__)
 
-  -h,   --help       show this help message and exit
-''' % (__version__, __script__)
+
+def version():
+    return dedent('''\
+        %s %s
+        ''' % (__program__, __version__))
 
 
 def parseargs():
@@ -258,6 +264,7 @@ def parseargs():
             [
                 'help',
                 'verbose',
+                'version',
                 'debug=',
                 'mode=',
                 'runs=',
@@ -283,6 +290,9 @@ def main():
     for opt, arg in opts:
         if opt in ('-h', '--help'):
             print(usage())
+            sys.exit()
+        elif opt == '--version':
+            print(version())
             sys.exit()
         elif opt in ('-v', '--verbose'):
             speedtest.verbose = True

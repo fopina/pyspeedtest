@@ -24,3 +24,4 @@ Usage
       -v,   --verbose    enabled verbose mode
 
       -h,   --help       show this help message and exit
+            --version    output version information and exit
