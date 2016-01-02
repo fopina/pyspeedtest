@@ -12,27 +12,4 @@ python:
   - "nightly" # currently points to 3.6-dev
 
 script:
-  - python setup.py sdist
-  - python setup.py install
-  - pyspeedtest -h
-  - pyspeedtest --help
-  - pyspeedtest --version
-  - pyspeedtest
-  - pyspeedtest -v
-  - pyspeedtest --verbose
-  - pyspeedtest -d 1 &>/dev/null
-  - pyspeedtest --debug=1 &>/dev/null
-  - pyspeedtest -d 2 &>/dev/null
-  - pyspeedtest --debug=2 &>/dev/null
-  - pyspeedtest -d 3 &>/dev/null
-  - pyspeedtest --debug=3 &>/dev/null
-  - pyspeedtest -r 1
-  - pyspeedtest --runs=1
-  - pyspeedtest -r 3
-  - pyspeedtest --runs=3
-  - pyspeedtest -m 1
-  - pyspeedtest --mode=1
-  - pyspeedtest -m 2
-  - pyspeedtest --mode=2
-  - pyspeedtest -m 4
-  - pyspeedtest --mode=4
+  - test.sh

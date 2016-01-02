@@ -305,6 +305,8 @@ def main():
         elif opt in ('-m', '--mode'):
             try:
                 mode = int(arg)
+                if not 7 >= mode >= 1:
+                    raise ValueError
             except ValueError:
                 error('Bad mode value')
                 sys.exit(1)
