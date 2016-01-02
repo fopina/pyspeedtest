@@ -9,7 +9,7 @@ import re
 import sys
 
 from math import pow, sqrt
-from threading import Thread, currentThread
+from threading import currentThread, Thread
 from time import time
 
 try:
