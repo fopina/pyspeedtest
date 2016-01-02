@@ -26,7 +26,7 @@ except ImportError:
     from urllib.parse import urlencode
 
 __program__ = 'pyspeedtest'
-__version__ = '1.1'
+__version__ = '1.2'
 
 
 class SpeedTest(object):
