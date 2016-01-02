@@ -281,11 +281,11 @@ def main():
     runs = 2
 
     for opt, arg in opts:
-        if opt in ('-v', '--verbose'):
-            speedtest.verbose = True
-        elif opt in ('-h', '--help'):
+        if opt in ('-h', '--help'):
             print(usage())
             sys.exit()
+        elif opt in ('-v', '--verbose'):
+            speedtest.verbose = True
         elif opt in ('-r', '--runs'):
             try:
                 runs = int(arg)
