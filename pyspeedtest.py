@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import bisect
 import getopt
+import logging
 import os
 import random
 import re
@@ -46,10 +47,6 @@ class SpeedTest(object):
         self.verbose = verbose
         self.http_debug = http_debug
 
-    def _printv(self, msg):
-        if self.verbose:
-            print(msg)
-
     def downloadthread(self, connection, url):
         connection.request('GET', url, None, {'Connection': 'Keep-Alive'})
         response = connection.getresponse()
@@ -81,13 +78,13 @@ class SpeedTest(object):
             for thread in threads:
                 thread.join()
                 total_downloaded += thread.downloaded
-                self._printv('Run %d for %s finished' % (thread.run_number,
-                                                         current_file))
+                logging.info('Run %d for %s finished',
+                             thread.run_number, current_file)
         total_ms = (time() - total_start_time) * 1000
         for connection in connections:
             connection.close()
-        self._printv('Took %d ms to download %d bytes' % (total_ms,
-                                                          total_downloaded))
+        logging.info('Took %d ms to download %d bytes',
+                     total_ms, total_downloaded)
         return total_downloaded * 8000 / total_ms
 
     def uploadthread(self, connection, data):
@@ -133,14 +130,14 @@ class SpeedTest(object):
                 threads.append(thread)
             for thread in threads:
                 thread.join()
-                self._printv('Run %d for %d bytes finished' %
-                             (thread.run_number, thread.uploaded))
+                logging.info('Run %d for %d bytes finished',
+                             thread.run_number, thread.uploaded)
                 total_uploaded += thread.uploaded
         total_ms = (time() - total_start_time) * 1000
         for connection in connections:
             connection.close()
-        self._printv('Took %d ms to upload %d bytes' %
-                     (total_ms, total_uploaded))
+        logging.info('Took %d ms to upload %d bytes',
+                     total_ms, total_uploaded)
         return total_uploaded * 8000 / total_ms
 
     def ping(self, server=None):
@@ -171,7 +168,7 @@ class SpeedTest(object):
         times.remove(worst)
         total_ms = sum(times) * 250  # * 1000 / number of tries (4) = 250
         connection.close()
-        self._printv('Latency for %s - %d' % (server, total_ms))
+        logging.info('Latency for %s - %d', server, total_ms)
         return total_ms
 
     def chooseserver(self):
@@ -191,10 +188,10 @@ class SpeedTest(object):
             r'<client ip="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
         location = None
         if match is None:
-            self._printv('Failed to retrieve coordinates')
+            logging.info('Failed to retrieve coordinates')
             return None
         location = match.groups()
-        self._printv('Your IP: %s\nYour latitude: %s\nYour longitude: %s' %
+        logging.info('Your IP: %s\nYour latitude: %s\nYour longitude: %s' %
                      location)
         connection.request(
             'GET', '/speedtest-servers.php?x=%d' % now, None, extra_headers)
@@ -212,7 +209,7 @@ class SpeedTest(object):
             bisect.insort_left(sorted_server_list, (distance, server[0]))
         best_server = (999999, '')
         for server in sorted_server_list[:10]:
-            self._printv(server[1])
+            logging.info(server[1])
             match = re.search(
                 r'http://([^/]+)/speedtest/upload\.php', server[1])
             if match is None:
@@ -301,6 +298,10 @@ def main():
                 sys.exit(1)
         elif opt == '-s':
             speedtest.host = arg
+
+    logging.basicConfig(
+        format='%(message)s',
+        level=logging.INFO if speedtest.verbose else logging.ERROR)
 
     if mode & 4 == 4 and speedtest.host is not None:
         print('Ping: %d ms' % speedtest.ping())
