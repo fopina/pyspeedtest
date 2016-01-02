@@ -71,7 +71,7 @@ class SpeedTest(object):
                 thread = Thread(
                     target=self.downloadthread,
                     args=(connections[run],
-                          '%s?x=%s' % (current_file, int(time()) * 1000)))
+                          '%s?x=%d' % (current_file, int(time()) * 1000)))
                 thread.run_number = run
                 thread.start()
                 threads.append(thread)
@@ -156,7 +156,7 @@ class SpeedTest(object):
             total_start_time = time()
             connection.request(
                 'GET',
-                '/speedtest/latency.txt?x=%s' % random.random(),
+                '/speedtest/latency.txt?x=%d' % random.random(),
                 None,
                 {'Connection': 'Keep-Alive'})
             response = connection.getresponse()
@@ -181,7 +181,7 @@ class SpeedTest(object):
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:10.0.2) Gecko/20100101 Firefox/10.0.2',
         }
         connection.request(
-            'GET', '/speedtest-config.php?x=%s' % now, None, extra_headers)
+            'GET', '/speedtest-config.php?x=%d' % now, None, extra_headers)
         response = connection.getresponse()
         reply = response.read().decode('utf-8')
         match = re.search(
@@ -194,7 +194,7 @@ class SpeedTest(object):
         self._printv('Your IP: %s\nYour latitude: %s\nYour longitude: %s' %
                      location)
         connection.request(
-            'GET', '/speedtest-servers.php?x=%s' % now, None, extra_headers)
+            'GET', '/speedtest-servers.php?x=%d' % now, None, extra_headers)
         response = connection.getresponse()
         reply = response.read().decode('utf-8')
         server_list = re.findall(
