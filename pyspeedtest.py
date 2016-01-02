@@ -244,7 +244,7 @@ optional arguments:
                                 1 + 2 + 4 = 7 - all (default)
   -r N, --runs=N     use N runs (default is 2)
   -s H, --server=H   use specific server
-  -v                 enabled verbose mode
+  -v,   --verbose    enabled verbose mode
 
   -h,   --help       show this help message and exit
 ''' % (__version__, __script__)
@@ -257,6 +257,7 @@ def parseargs():
             'hvd:m:r:s:',
             [
                 'help',
+                'verbose',
                 'debug=',
                 'mode=',
                 'runs=',
@@ -280,7 +281,7 @@ def main():
     runs = 2
 
     for opt, arg in opts:
-        if opt == '-v':
+        if opt in ('-v', '--verbose'):
             speedtest.verbose = True
         elif opt in ('-h', '--help'):
             print(usage())

@@ -21,6 +21,6 @@ Usage
                                     1 + 2 + 4 = 7 - all (default)
       -r N, --runs=N     use N runs (default is 2)
       -s H, --server=H   use specific server
-      -v                 enabled verbose mode
+      -v,   --verbose    enabled verbose mode
 
       -h,   --help       show this help message and exit
