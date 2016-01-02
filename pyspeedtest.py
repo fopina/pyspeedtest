@@ -26,6 +26,7 @@ except ImportError:
     from urllib.parse import urlencode
 
 __program__ = 'pyspeedtest'
+__script__ = os.path.basename(sys.argv[0])
 __version__ = '1.2'
 
 
@@ -244,7 +245,7 @@ optional arguments:
                                 1 + 2 + 4 = 7 - all (default)
   -d L, --debug=L    set http connection debug level (default is 0)
   -s H, --server=H   use specific server
-''' % (__version__, os.path.basename(sys.argv[0]))
+''' % (__version__, __script__)
 
 
 def parseargs():
