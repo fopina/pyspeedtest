@@ -268,32 +268,32 @@ def main():
     mode = 7
     runs = 2
 
-    for o, a in opts:
-        if o == '-v':
+    for opt, arg in opts:
+        if opt == '-v':
             speedtest.verbose = True
-        elif o in ('-h', '--help'):
+        elif opt in ('-h', '--help'):
             usage()
             sys.exit()
-        elif o in ('-r', '--runs'):
+        elif opt in ('-r', '--runs'):
             try:
-                runs = int(a)
+                runs = int(arg)
             except ValueError:
                 print('Bad runs value')
                 sys.exit(1)
-        elif o in ('-m', '--mode'):
+        elif opt in ('-m', '--mode'):
             try:
-                mode = int(a)
+                mode = int(arg)
             except ValueError:
                 print('Bad mode value')
                 sys.exit(1)
-        elif o in ('-d', '--debug'):
+        elif opt in ('-d', '--debug'):
             try:
-                speedtest.http_debug = int(a)
+                speedtest.http_debug = int(arg)
             except ValueError:
                 print('Bad debug value')
                 sys.exit(1)
-        elif o == '-s':
-            speedtest.host = a
+        elif opt == '-s':
+            speedtest.host = arg
 
     if mode & 4 == 4 and speedtest.host is not None:
         print('Ping: %d ms' % speedtest.ping())
