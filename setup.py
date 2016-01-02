@@ -10,7 +10,7 @@ setup(
     version=__version__,
     py_modules=['pyspeedtest'],
     scripts=['bin/pyspeedtest'],
-    license='MIT License',
+    license='MIT',
     description='Speedtest.net python script',
     url='https://github.com/fopina/pyspeedtest',
     download_url='https://github.com/fopina/pyspeedtest/tarball/v' + __version__,
