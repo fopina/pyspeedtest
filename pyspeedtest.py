@@ -218,7 +218,7 @@ class SpeedTest(object):
             latency = self.ping(server_host)
             if latency < best_server[0]:
                 best_server = (latency, server_host)
-        print('Using server: ' + best_server[1])
+        print('Using server:', best_server[1])
         return best_server[1]
 
 
