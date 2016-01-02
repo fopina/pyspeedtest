@@ -27,10 +27,11 @@ __version__ = '1.1'
 
 
 class SpeedTest(object):
+
     DOWNLOAD_FILES = [
         '/speedtest/random350x350.jpg',
         '/speedtest/random500x500.jpg',
-        '/speedtest/random1500x1500.jpg',
+        '/speedtest/random1500x1500.jpg'
     ]
 
     UPLOAD_FILES = [
