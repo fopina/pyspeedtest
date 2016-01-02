@@ -229,7 +229,8 @@ def parseargs():
             ]
         )
     except getopt.GetoptError as err:
-        print(str(err))
+        print(err)
+        print()
         usage()
         sys.exit(2)
     else:
