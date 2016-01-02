@@ -28,7 +28,7 @@ except ImportError:
 
 __program__ = 'pyspeedtest'
 __script__ = os.path.basename(sys.argv[0])
-__version__ = '1.2'
+__version__ = '1.3'
 
 
 class SpeedTest(object):
