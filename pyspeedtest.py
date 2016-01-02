@@ -294,13 +294,11 @@ def main():
         elif opt == '--version':
             print(version())
             sys.exit()
-        elif opt in ('-v', '--verbose'):
-            speedtest.verbose = True
-        elif opt in ('-r', '--runs'):
+        elif opt in ('-d', '--debug'):
             try:
-                runs = int(arg)
+                speedtest.http_debug = int(arg)
             except ValueError:
-                error('Bad runs value')
+                error('Bad debug level value')
                 sys.exit(1)
         elif opt in ('-m', '--mode'):
             try:
@@ -310,14 +308,16 @@ def main():
             except ValueError:
                 error('Bad mode value')
                 sys.exit(1)
-        elif opt in ('-d', '--debug'):
+        elif opt in ('-r', '--runs'):
             try:
-                speedtest.http_debug = int(arg)
+                runs = int(arg)
             except ValueError:
-                error('Bad debug level value')
+                error('Bad runs value')
                 sys.exit(1)
         elif opt == '-s':
             speedtest.host = arg
+        elif opt in ('-v', '--verbose'):
+            speedtest.verbose = True
 
     logging.basicConfig(
         format='%(message)s',
