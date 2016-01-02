@@ -68,23 +68,31 @@ class SpeedTest(object):
         for current_file in SpeedTest.DOWNLOAD_FILES:
             threads = []
             for run in range(runs):
-                thread = Thread(target=self.downloadthread, args=(connections[run], current_file + '?x=' + str(int(time() * 1000))))
+                thread = Thread(
+                    target=self.downloadthread,
+                    args=(connections[run],
+                          '%s?x=%s' % (current_file, int(time()) * 1000)))
                 thread.run_number = run
                 thread.start()
                 threads.append(thread)
             for thread in threads:
                 thread.join()
                 total_downloaded += thread.downloaded
-                self._printv('Run %d for %s finished' % (thread.run_number, current_file))
+                self._printv('Run %d for %s finished' % (thread.run_number,
+                                                         current_file))
         total_ms = (time() - total_start_time) * 1000
         for connection in connections:
             connection.close()
-        self._printv('Took %d ms to download %d bytes' % (total_ms, total_downloaded))
+        self._printv('Took %d ms to download %d bytes' % (total_ms,
+                                                          total_downloaded))
         return total_downloaded * 8000 / total_ms
 
     def uploadthread(self, connection, data):
-        url = '/speedtest/upload.php?x=' + str(random.random())
-        connection.request('POST', url, data, {'Connection': 'Keep-Alive', 'Content-Type': 'application/x-www-form-urlencoded'})
+        url = '/speedtest/upload.php?x=%s' % random.random()
+        connection.request('POST', url, data, {
+            'Connection': 'Keep-Alive',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        })
         response = connection.getresponse()
         reply = response.read().decode('utf-8')
         self_thread = currentThread()
@@ -104,7 +112,10 @@ class SpeedTest(object):
         post_data = []
         alphabet = string.digits + string.ascii_letters
         for current_file_size in SpeedTest.UPLOAD_FILES:
-            values = {'content0': ''.join(random.choice(alphabet) for i in range(current_file_size))}
+            values = {
+                'content0': ''.join(
+                    random.choice(alphabet) for i in range(current_file_size))
+            }
             post_data.append(urlencode(values))
 
         total_uploaded = 0
@@ -112,18 +123,21 @@ class SpeedTest(object):
         for data in post_data:
             threads = []
             for run in range(runs):
-                thread = Thread(target=self.uploadthread, args=(connections[run], data))
+                thread = Thread(target=self.uploadthread,
+                                args=(connections[run], data))
                 thread.run_number = run
                 thread.start()
                 threads.append(thread)
             for thread in threads:
                 thread.join()
-                self._printv('Run %d for %d bytes finished' % (thread.run_number, thread.uploaded))
+                self._printv('Run %d for %d bytes finished' %
+                             (thread.run_number, thread.uploaded))
                 total_uploaded += thread.uploaded
         total_ms = (time() - total_start_time) * 1000
         for connection in connections:
             connection.close()
-        self._printv('Took %d ms to upload %d bytes' % (total_ms, total_uploaded))
+        self._printv('Took %d ms to upload %d bytes' %
+                     (total_ms, total_uploaded))
         return total_uploaded * 8000 / total_ms
 
     def ping(self, server=None):
@@ -140,7 +154,11 @@ class SpeedTest(object):
         worst = 0
         for _ in range(5):
             total_start_time = time()
-            connection.request('GET', '/speedtest/latency.txt?x=' + str(random.random()), None, {'Connection': 'Keep-Alive'})
+            connection.request(
+                'GET',
+                '/speedtest/latency.txt?x=%s' % random.random(),
+                None,
+                {'Connection': 'Keep-Alive'})
             response = connection.getresponse()
             response.read()
             total_ms = time() - total_start_time
@@ -162,20 +180,25 @@ class SpeedTest(object):
             'Connection': 'Keep-Alive',
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:10.0.2) Gecko/20100101 Firefox/10.0.2',
         }
-        connection.request('GET', '/speedtest-config.php?x=' + str(now), None, extra_headers)
+        connection.request(
+            'GET', '/speedtest-config.php?x=%s' % now, None, extra_headers)
         response = connection.getresponse()
         reply = response.read().decode('utf-8')
-        match = re.search(r'<client ip="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
+        match = re.search(
+            r'<client ip="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
         location = None
         if match is None:
             self._printv('Failed to retrieve coordinates')
             return None
         location = match.groups()
-        self._printv('Your IP: %s\nYour latitude: %s\nYour longitude: %s' % location)
-        connection.request('GET', '/speedtest-servers.php?x=' + str(now), None, extra_headers)
+        self._printv('Your IP: %s\nYour latitude: %s\nYour longitude: %s' %
+                     location)
+        connection.request(
+            'GET', '/speedtest-servers.php?x=%s' % now, None, extra_headers)
         response = connection.getresponse()
         reply = response.read().decode('utf-8')
-        server_list = re.findall(r'<server url="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
+        server_list = re.findall(
+            r'<server url="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
         my_lat = float(location[1])
         my_lon = float(location[2])
         sorted_server_list = []
