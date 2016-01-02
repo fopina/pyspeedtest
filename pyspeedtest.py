@@ -314,7 +314,7 @@ def main():
             try:
                 speedtest.http_debug = int(arg)
             except ValueError:
-                error('Bad debug value')
+                error('Bad debug level value')
                 sys.exit(1)
         elif opt == '-s':
             speedtest.host = arg
