@@ -80,7 +80,7 @@ class SpeedTest(object):
         for connection in connections:
             connection.close()
         self._printv('Took %d ms to download %d bytes' % (total_ms, total_downloaded))
-        return (total_downloaded * 8000 / total_ms)
+        return total_downloaded * 8000 / total_ms
 
     def uploadthread(self, connection, data):
         url = '/speedtest/upload.php?x=' + str(random.random())
@@ -124,7 +124,7 @@ class SpeedTest(object):
         for connection in connections:
             connection.close()
         self._printv('Took %d ms to upload %d bytes' % (total_ms, total_uploaded))
-        return (total_uploaded * 8000 / total_ms)
+        return total_uploaded * 8000 / total_ms
 
     def ping(self, server=None):
         if server is None:
