@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-__version__ = '1.1'
-
 import bisect
 import getopt
 import httplib
@@ -13,6 +11,8 @@ import urllib
 from math import pow, sqrt
 from threading import Thread, currentThread
 from time import time
+
+__version__ = '1.1'
 
 
 class SpeedTest(object):
