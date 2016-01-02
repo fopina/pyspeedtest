@@ -232,7 +232,7 @@ def parseargs():
         print(err)
         print()
         usage()
-        sys.exit(2)
+        sys.exit(1)
     else:
         return (opts, args)
 
@@ -255,19 +255,19 @@ def main():
                 runs = int(a)
             except ValueError:
                 print('Bad runs value')
-                sys.exit(2)
+                sys.exit(1)
         elif o in ('-m', '--mode'):
             try:
                 mode = int(a)
             except ValueError:
                 print('Bad mode value')
-                sys.exit(2)
+                sys.exit(1)
         elif o in ('-d', '--debug'):
             try:
                 speedtest.http_debug = int(a)
             except ValueError:
                 print('Bad debug value')
-                sys.exit(2)
+                sys.exit(1)
         elif o == '-s':
             speedtest.host = a
 
