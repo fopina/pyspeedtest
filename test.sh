@@ -70,6 +70,6 @@ done
 # test for bad runs
 for arg in -r --runs; do
     ! output=$(pyspeedtest "${arg}" xxx 2>&1)
-    [[ $output = "usage: pyspeedtest.py [OPTION]...
+    [[ $output = "usage: pyspeedtest [OPTION]...
 pyspeedtest.py: error: argument -r/--runs: invalid positive int value: 'xxx'" ]]
 done
