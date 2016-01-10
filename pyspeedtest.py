@@ -50,6 +50,12 @@ class SpeedTest(object):
         self.verbose = verbose
         self.http_debug = http_debug
 
+    def connect(self, url):
+        connection = HTTPConnection(url)
+        connection.set_debuglevel(self.http_debug)
+        connection.connect()
+        return connection
+
     def downloadthread(self, connection, url):
         connection.request('GET', url, None, {'Connection': 'Keep-Alive'})
         response = connection.getresponse()
@@ -63,10 +69,7 @@ class SpeedTest(object):
         total_downloaded = 0
         connections = []
         for run in range(runs):
-            connection = HTTPConnection(self.host)
-            connection.set_debuglevel(self.http_debug)
-            connection.connect()
-            connections.append(connection)
+            connections.append(self.connect(self.host))
         total_start_time = time()
         for current_file in SpeedTest.DOWNLOAD_FILES:
             threads = []
@@ -107,10 +110,7 @@ class SpeedTest(object):
 
         connections = []
         for run in range(runs):
-            connection = HTTPConnection(self.host)
-            connection.set_debuglevel(self.http_debug)
-            connection.connect()
-            connections.append(connection)
+            connections.append(self.connect(self.host))
 
         post_data = []
         alphabet = string.digits + string.ascii_letters
@@ -150,9 +150,7 @@ class SpeedTest(object):
         if server is None:
             error('No server specifier')
 
-        connection = HTTPConnection(server)
-        connection.set_debuglevel(self.http_debug)
-        connection.connect()
+        connection = self.connect(server)
         times = []
         worst = 0
         for _ in range(5):
@@ -175,9 +173,7 @@ class SpeedTest(object):
         return total_ms
 
     def chooseserver(self):
-        connection = HTTPConnection('www.speedtest.net')
-        connection.set_debuglevel(self.http_debug)
-        connection.connect()
+        connection = self.connect('www.speedtest.net')
         now = int(time() * 1000)
         extra_headers = {
             'Connection': 'Keep-Alive',
