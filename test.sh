@@ -55,7 +55,7 @@ pyspeedtest --debug=0 --mode=7 --runs=2 |& grep -qE $'^Using server: .*\nDownloa
 for arg in -d --debug; do
     ! output=$(pyspeedtest "${arg}" xxx 2>&1)
     [[ $output = "usage: pyspeedtest [OPTION]...
-pyspeedtest.py: error: argument -d/--debug: invalid positive int value: 'xxx'" ]]
+pyspeedtest: error: argument -d/--debug: invalid positive int value: 'xxx'" ]]
 done
 
 # test for bad modes
@@ -63,7 +63,7 @@ for badmode in -1 0 8 9 10 11 12 13 14 15; do
     for arg in -m --mode; do
         ! output=$(pyspeedtest "${arg}" "${badmode}" 2>&1)
         [[ $output = "usage: pyspeedtest [OPTION]...
-pyspeedtest.py: error: argument -m/--mode: invalid choice: ${badmode} (choose from 1, 2, 3, 4, 5, 6, 7)" ]]
+pyspeedtest: error: argument -m/--mode: invalid choice: ${badmode} (choose from 1, 2, 3, 4, 5, 6, 7)" ]]
     done
 done
 
@@ -71,5 +71,5 @@ done
 for arg in -r --runs; do
     ! output=$(pyspeedtest "${arg}" xxx 2>&1)
     [[ $output = "usage: pyspeedtest [OPTION]...
-pyspeedtest.py: error: argument -r/--runs: invalid positive int value: 'xxx'" ]]
+pyspeedtest: error: argument -r/--runs: invalid positive int value: 'xxx'" ]]
 done
