@@ -227,6 +227,7 @@ class SpeedTest(object):
 
 def error(*args):
     print(*args, file=sys.stderr)
+    sys.exit(1)
 
 
 def usage():
@@ -273,10 +274,7 @@ def parseargs():
             ]
         )
     except getopt.GetoptError as err:
-        error(err)
-        error()
-        error(usage())
-        sys.exit(1)
+        error(err.msg + '\n\n' + usage())
     else:
         return opts
 
@@ -300,7 +298,6 @@ def main():
                 speedtest.http_debug = int(arg)
             except ValueError:
                 error('Bad debug level value')
-                sys.exit(1)
         elif opt in ('-m', '--mode'):
             try:
                 mode = int(arg)
@@ -308,13 +305,11 @@ def main():
                     raise ValueError
             except ValueError:
                 error('Bad mode value')
-                sys.exit(1)
         elif opt in ('-r', '--runs'):
             try:
                 runs = int(arg)
             except ValueError:
                 error('Bad runs value')
-                sys.exit(1)
         elif opt == '-s':
             speedtest.host = arg
         elif opt in ('-v', '--verbose'):
