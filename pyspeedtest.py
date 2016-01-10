@@ -51,10 +51,13 @@ class SpeedTest(object):
         self.http_debug = http_debug
 
     def connect(self, url):
-        connection = HTTPConnection(url)
-        connection.set_debuglevel(self.http_debug)
-        connection.connect()
-        return connection
+        try:
+            connection = HTTPConnection(url)
+            connection.set_debuglevel(self.http_debug)
+            connection.connect()
+            return connection
+        except:
+            error("Error connecting to '%s'" % url)
 
     def downloadthread(self, connection, url):
         connection.request('GET', url, None, {'Connection': 'Keep-Alive'})
