@@ -28,7 +28,7 @@ except ImportError:
 
 __program__ = 'pyspeedtest'
 __script__ = os.path.basename(sys.argv[0])
-__version__ = '1.4'
+__version__ = '1.5'
 __description__ = 'Test your bandwidth speed using Speedtest.net servers.'
 
 
