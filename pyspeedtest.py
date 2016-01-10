@@ -3,8 +3,8 @@
 
 from __future__ import print_function
 
+import argparse
 import bisect
-import getopt
 import logging
 import os
 import random
@@ -14,7 +14,6 @@ import sys
 
 from math import sqrt
 from threading import currentThread, Thread
-from textwrap import dedent
 from time import time
 
 try:
@@ -30,6 +29,7 @@ except ImportError:
 __program__ = 'pyspeedtest'
 __script__ = os.path.basename(sys.argv[0])
 __version__ = '1.4'
+__description__ = 'Test your bandwidth speed using Speedtest.net servers.'
 
 
 class SpeedTest(object):
@@ -45,10 +45,14 @@ class SpeedTest(object):
         493638
     ]
 
-    def __init__(self, host=None, verbose=False, http_debug=0):
+    def __init__(self, host, http_debug, runs, verbose):
+        logging.basicConfig(
+            format='%(message)s',
+            level=logging.INFO if verbose else logging.ERROR)
+
         self.host = host
-        self.verbose = verbose
         self.http_debug = http_debug
+        self.runs = runs
 
     def connect(self, url):
         try:
@@ -65,18 +69,18 @@ class SpeedTest(object):
         self_thread = currentThread()
         self_thread.downloaded = len(response.read())
 
-    def download(self, runs=2):
+    def download(self):
         if self.host is None:
             self.host = self.chooseserver()
 
         total_downloaded = 0
         connections = []
-        for run in range(runs):
+        for run in range(self.runs):
             connections.append(self.connect(self.host))
         total_start_time = time()
         for current_file in SpeedTest.DOWNLOAD_FILES:
             threads = []
-            for run in range(runs):
+            for run in range(self.runs):
                 thread = Thread(
                     target=self.downloadthread,
                     args=(connections[run],
@@ -107,12 +111,12 @@ class SpeedTest(object):
         self_thread = currentThread()
         self_thread.uploaded = int(reply.split('=')[1])
 
-    def upload(self, runs=2):
+    def upload(self):
         if self.host is None:
             self.host = self.chooseserver()
 
         connections = []
-        for run in range(runs):
+        for run in range(self.runs):
             connections.append(self.connect(self.host))
 
         post_data = []
@@ -128,7 +132,7 @@ class SpeedTest(object):
         total_start_time = time()
         for data in post_data:
             threads = []
-            for run in range(runs):
+            for run in range(self.runs):
                 thread = Thread(target=self.uploadthread,
                                 args=(connections[run], data))
                 thread.run_number = run + 1
@@ -230,103 +234,86 @@ def error(*args):
     sys.exit(1)
 
 
-def usage():
-    return dedent('''\
-        usage: %s [OPTION]...
+def parseargs(args):
 
-        Test your bandwidth speed using Speedtest.net servers.
+    class SmartFormatter(argparse.HelpFormatter):
 
-        optional arguments:
+        def _split_lines(self, text, width):
+            """argparse.RawTextHelpFormatter._split_lines"""
+            if text.startswith('r|'):
+                return text[2:].splitlines()
+            return argparse.HelpFormatter._split_lines(self, text, width)
 
-          -d L, --debug=L    set http connection debug level (default is 0)
-          -m M, --mode=M     test mode: 1 - download
-                                        2 - upload
-                                        4 - ping
-                                        1 + 2 + 4 = 7 - all (default)
-          -r N, --runs=N     use N runs (default is 2)
-          -s H, --server=H   use specific server
-          -v,   --verbose    output additional information
+    def positive_int(value):
+        try:
+            ivalue = int(value)
+            if ivalue < 0:
+                raise ValueError
+            return ivalue
+        except ValueError:
+            raise argparse.ArgumentTypeError(
+                "invalid positive int value: '%s'" % value)
 
-          -h,   --help       display this help and exit
-                --version    output version information and exit
-        ''' % __script__)
+    parser = argparse.ArgumentParser(
+        add_help=False,
+        description=__description__,
+        formatter_class=SmartFormatter,
+        usage='%(prog)s [OPTION]...')
+    parser.add_argument(
+        '-d', '--debug',
+        default=0,
+        help='set http connection debug level (default is 0)',
+        metavar='L',
+        type=positive_int)
+    parser.add_argument(
+        '-h', '--help',
+        action='help',
+        help=argparse.SUPPRESS)
+    parser.add_argument(
+        '-m', '--mode',
+        choices=range(1, 8),
+        default=7,
+        help='''r|test mode: 1 - download
+           2 - upload
+           4 - ping
+           1 + 2 + 4 = 7 - all (default)''',
+        metavar='M',
+        type=int)
+    parser.add_argument(
+        '-r', '--runs',
+        default=2,
+        help='use N runs (default is 2)',
+        metavar='N',
+        type=positive_int)
+    parser.add_argument(
+        '-s', '--server',
+        help='use specific server',
+        metavar='H')
+    parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        dest='verbose',
+        help='output additional information')
+    parser.add_argument(
+        '--version',
+        action='version',
+        version='{0} {1}'.format(__program__, __version__))
+
+    return parser.parse_args(args)
 
 
-def version():
-    return dedent('''\
-        %s %s
-        ''' % (__program__, __version__))
+def main(args=None):
+    opts = parseargs(args)
+    speedtest = SpeedTest(opts.server, opts.debug, opts.runs, opts.verbose)
 
-
-def parseargs():
-    try:
-        opts, _ = getopt.getopt(
-            sys.argv[1:],
-            'hvd:m:r:s:',
-            [
-                'help',
-                'verbose',
-                'version',
-                'debug=',
-                'mode=',
-                'runs=',
-                'server='
-            ]
-        )
-    except getopt.GetoptError as err:
-        error(err.msg + '\n\n' + usage())
-    else:
-        return opts
-
-
-def main():
-    opts = parseargs()
-    speedtest = SpeedTest()
-
-    mode = 7
-    runs = 2
-
-    for opt, arg in opts:
-        if opt in ('-h', '--help'):
-            print(usage())
-            sys.exit()
-        elif opt == '--version':
-            print(version())
-            sys.exit()
-        elif opt in ('-d', '--debug'):
-            try:
-                speedtest.http_debug = int(arg)
-            except ValueError:
-                error('Bad debug level value')
-        elif opt in ('-m', '--mode'):
-            try:
-                mode = int(arg)
-                if not 7 >= mode >= 1:
-                    raise ValueError
-            except ValueError:
-                error('Bad mode value')
-        elif opt in ('-r', '--runs'):
-            try:
-                runs = int(arg)
-            except ValueError:
-                error('Bad runs value')
-        elif opt == '-s':
-            speedtest.host = arg
-        elif opt in ('-v', '--verbose'):
-            speedtest.verbose = True
-
-    logging.basicConfig(
-        format='%(message)s',
-        level=logging.INFO if speedtest.verbose else logging.ERROR)
-
-    if mode & 4 == 4 and speedtest.host is not None:
+    if opts.mode & 4 == 4 and opts.server is not None:
         print('Ping: %d ms' % speedtest.ping())
 
-    if mode & 1 == 1:
-        print('Download speed: %s' % pretty_speed(speedtest.download(runs)))
+    if opts.mode & 1 == 1:
+        print('Download speed: %s' % pretty_speed(speedtest.download()))
 
-    if mode & 2 == 2:
-        print('Upload speed: %s' % pretty_speed(speedtest.upload(runs)))
+    if opts.mode & 2 == 2:
+        print('Upload speed: %s' % pretty_speed(speedtest.upload()))
 
 
 def pretty_speed(speed):
