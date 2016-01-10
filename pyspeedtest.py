@@ -180,7 +180,8 @@ class SpeedTest(object):
         now = int(time() * 1000)
         extra_headers = {
             'Connection': 'Keep-Alive',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:10.0.2) Gecko/20100101 Firefox/10.0.2',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; '
+                          'rv:10.0.2) Gecko/20100101 Firefox/10.0.2',
         }
         connection.request(
             'GET', '/speedtest-config.php?x=%d' % now, None, extra_headers)
