@@ -148,7 +148,7 @@ class SpeedTest(object):
             server = self.host
 
         if server is None:
-            raise Exception('No server specified')
+            error('No server specifier')
 
         connection = HTTPConnection(server)
         connection.set_debuglevel(self.http_debug)
