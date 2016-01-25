@@ -28,7 +28,7 @@ except ImportError:
 
 __program__ = 'pyspeedtest'
 __script__ = os.path.basename(sys.argv[0])
-__version__ = '1.1.2'
+__version__ = '1.1.3'
 __description__ = 'Test your bandwidth speed using Speedtest.net servers.'
 
 
@@ -45,7 +45,9 @@ class SpeedTest(object):
         493638
     ]
 
-    def __init__(self, host, http_debug, runs, verbose):
+    ALPHABET = string.digits + string.ascii_letters
+
+    def __init__(self, host=None, http_debug=0, runs=2, verbose=False):
         logging.basicConfig(
             format='%(message)s',
             level=logging.INFO if verbose else logging.ERROR)
@@ -120,11 +122,10 @@ class SpeedTest(object):
             connections.append(self.connect(self.host))
 
         post_data = []
-        alphabet = string.digits + string.ascii_letters
         for current_file_size in SpeedTest.UPLOAD_FILES:
             values = {
                 'content0': ''.join(
-                    random.choice(alphabet) for i in range(current_file_size))
+                    random.choice(SpeedTest.ALPHABET) for i in range(current_file_size))
             }
             post_data.append(urlencode(values))
 
@@ -155,7 +156,7 @@ class SpeedTest(object):
             server = self.host
 
         if server is None:
-            error('No server specifier')
+            error('No server specified')
 
         connection = self.connect(server)
         times = []
