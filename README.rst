@@ -3,6 +3,15 @@ pyspeedtest
 
 Python script to test network bandwidth using Speedtest.net servers
 
+Installation
+------------
+
+This fork of pyspeedtest adds support for Python 3 while still remaining compatible with Python 2.
+
+::
+
+    pip install --user git+https://github.com/brbsix/pyspeedtest
+
 Usage
 -----
 
