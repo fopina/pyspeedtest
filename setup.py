@@ -20,6 +20,10 @@ try:
 except(IOError, ImportError):
     README = open('README.md').read()
 
+if sys.argv[-1] == 'readmerst':
+    print(README)
+    sys.exit()
+
 # allow setup.py to be run from any path
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
