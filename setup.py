@@ -4,11 +4,21 @@
 import os
 from setuptools import setup
 from pyspeedtest import __program__, __version__
+import sys
 
+if sys.argv[-1] == 'pub':
+    os.system('python setup.py sdist upload')
+    sys.exit()
 
-def read(filename):
-    with open(filename) as f:
-        return f.read()
+if sys.argv[-1] == 'pubtest':
+    os.system('python setup.py sdist upload -r https://testpypi.python.org/pypi')
+    sys.exit()
+
+try:
+    import pypandoc
+    README = pypandoc.convert(os.path.join(os.path.dirname(__file__), 'README.md'), 'rst')
+except(IOError, ImportError):
+    README = open('README.md').read()
 
 # allow setup.py to be run from any path
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -18,10 +28,10 @@ setup(
     version=__version__,
     license='MIT',
     description='Speedtest.net Python script',
-    long_description=read('README.rst'),
+    long_description=README,
     url='https://github.com/fopina/pyspeedtest',
     download_url='https://github.com/fopina/pyspeedtest/tarball/v%s'
-                  % __version__,
+                % __version__,
     author='Filipe Pina',
     author_email='fopina@skmobi.com',
     py_modules=['pyspeedtest'],
