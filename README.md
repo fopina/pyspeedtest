@@ -1,6 +1,8 @@
 pyspeedtest
 ==========
 
+[![Build Status](https://travis-ci.org/fopina/pyspeedtest.svg?branch=master)](https://travis-ci.org/fopina/pyspeedtest) [![PyPI](https://img.shields.io/pypi/v/pyspeedtest.svg)]() [![PyPI](https://img.shields.io/pypi/pyversions/pyspeedtest.svg)]()
+
 Python script to test network bandwidth using Speedtest.net servers
 
 Installation
