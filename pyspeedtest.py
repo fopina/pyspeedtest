@@ -52,9 +52,19 @@ class SpeedTest(object):
             format='%(message)s',
             level=logging.INFO if verbose else logging.ERROR)
 
-        self.host = host
+        self._host = host
         self.http_debug = http_debug
         self.runs = runs
+
+    @property
+    def host(self):
+        if not self._host:
+            self._host = self.chooseserver()
+        return self._host
+
+    @host.setter
+    def host(self, new_host):
+        self._host = new_host
 
     def connect(self, url):
         try:
@@ -72,9 +82,6 @@ class SpeedTest(object):
         self_thread.downloaded = len(response.read())
 
     def download(self):
-        if self.host is None:
-            self.host = self.chooseserver()
-
         total_downloaded = 0
         connections = []
         for run in range(self.runs):
@@ -114,9 +121,6 @@ class SpeedTest(object):
         self_thread.uploaded = int(reply.split('=')[1])
 
     def upload(self):
-        if self.host is None:
-            self.host = self.chooseserver()
-
         connections = []
         for run in range(self.runs):
             connections.append(self.connect(self.host))
@@ -152,11 +156,8 @@ class SpeedTest(object):
         return total_uploaded * 8000 / total_ms
 
     def ping(self, server=None):
-        if server is None:
+        if not server:
             server = self.host
-
-        if server is None:
-            error('No server specified')
 
         connection = self.connect(server)
         times = []
@@ -226,7 +227,9 @@ class SpeedTest(object):
             latency = self.ping(server_host)
             if latency < best_server[0]:
                 best_server = (latency, server_host)
-        print('Using server:', best_server[1])
+        if not best_server[1]:
+            error('Cannot find a test server')
+        print('Using server: %s', best_server[1])
         return best_server[1]
 
 
