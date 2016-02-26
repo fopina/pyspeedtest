@@ -14,11 +14,9 @@ if sys.argv[-1] == 'pubtest':
     os.system('python setup.py sdist upload -r https://testpypi.python.org/pypi')
     sys.exit()
 
-try:
-    import pypandoc
-    README = pypandoc.convert(os.path.join(os.path.dirname(__file__), 'README.md'), 'rst')
-except(IOError, ImportError):
-    README = open('README.md').read()
+# fail if there is no pypandoc...
+import pypandoc
+README = pypandoc.convert(os.path.join(os.path.dirname(__file__), 'README.md'), 'rst')
 
 if sys.argv[-1] == 'readmerst':
     print(README)
