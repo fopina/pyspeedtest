@@ -7,16 +7,20 @@ from pyspeedtest import __program__, __version__
 import sys
 
 if sys.argv[-1] == 'pub':
+    import pypandoc  # quick check
     os.system('python setup.py sdist upload')
     sys.exit()
 
 if sys.argv[-1] == 'pubtest':
+    import pypandoc  # quick check
     os.system('python setup.py sdist upload -r https://testpypi.python.org/pypi')
     sys.exit()
 
-# fail if there is no pypandoc...
-import pypandoc
-README = pypandoc.convert(os.path.join(os.path.dirname(__file__), 'README.md'), 'rst')
+try:
+    import pypandoc
+    README = pypandoc.convert(os.path.join(os.path.dirname(__file__), 'README.md'), 'rst')
+except(IOError, ImportError):		
+    README = open('README.md').read()
 
 if sys.argv[-1] == 'readmerst':
     print(README)
