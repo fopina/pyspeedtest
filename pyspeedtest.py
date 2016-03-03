@@ -47,11 +47,7 @@ class SpeedTest(object):
 
     ALPHABET = string.digits + string.ascii_letters
 
-    def __init__(self, host=None, http_debug=0, runs=2, verbose=False):
-        logging.basicConfig(
-            format='%(message)s',
-            level=logging.INFO if verbose else logging.ERROR)
-
+    def __init__(self, host=None, http_debug=0, runs=2):
         self._host = host
         self.http_debug = http_debug
         self.runs = runs
@@ -73,7 +69,7 @@ class SpeedTest(object):
             connection.connect()
             return connection
         except:
-            error("Error connecting to '%s'" % url)
+            raise Exception("Error connecting to '%s'" % url)
 
     def downloadthread(self, connection, url):
         connection.request('GET', url, None, {'Connection': 'Keep-Alive'})
@@ -228,15 +224,9 @@ class SpeedTest(object):
             if latency < best_server[0]:
                 best_server = (latency, server_host)
         if not best_server[1]:
-            error('Cannot find a test server')
-        print('Using server: %s', best_server[1])
+            raise Exception('Cannot find a test server')
+        logging.info('Best server: %s', best_server[1])
         return best_server[1]
-
-
-def error(*args):
-    print(*args, file=sys.stderr)
-    sys.exit(1)
-
 
 def parseargs(args):
 
@@ -305,10 +295,8 @@ def parseargs(args):
 
     return parser.parse_args(args)
 
-
-def main(args=None):
-    opts = parseargs(args)
-    speedtest = SpeedTest(opts.server, opts.debug, opts.runs, opts.verbose)
+def perform_speedtest(opts):
+    speedtest = SpeedTest(opts.server, opts.debug, opts.runs)
 
     if opts.mode & 4 == 4 and opts.server is not None:
         print('Ping: %d ms' % speedtest.ping())
@@ -319,6 +307,16 @@ def main(args=None):
     if opts.mode & 2 == 2:
         print('Upload speed: %s' % pretty_speed(speedtest.upload()))
 
+def main(args=None):
+    opts = parseargs(args)
+    logging.basicConfig(
+        format = '%(message)s',
+        level = logging.INFO if opts.verbose else logging.WARNING)
+    try:
+        perform_speedtest(opts)
+    except Exception as e:
+        if opts.verbose: logging.exception(e)
+        else: logging.error(e)
 
 def pretty_speed(speed):
     units = ['bps', 'Kbps', 'Mbps', 'Gbps']
