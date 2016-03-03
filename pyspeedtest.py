@@ -28,7 +28,7 @@ except ImportError:
 
 __program__ = 'pyspeedtest'
 __script__ = os.path.basename(sys.argv[0])
-__version__ = '1.2.4'
+__version__ = '1.2.4.1'
 __description__ = 'Test your bandwidth speed using Speedtest.net servers.'
 
 
@@ -228,6 +228,7 @@ class SpeedTest(object):
         logging.info('Best server: %s', best_server[1])
         return best_server[1]
 
+
 def parseargs(args):
 
     class SmartFormatter(argparse.HelpFormatter):
@@ -295,6 +296,7 @@ def parseargs(args):
 
     return parser.parse_args(args)
 
+
 def perform_speedtest(opts):
     speedtest = SpeedTest(opts.server, opts.debug, opts.runs)
 
@@ -307,16 +309,20 @@ def perform_speedtest(opts):
     if opts.mode & 2 == 2:
         print('Upload speed: %s' % pretty_speed(speedtest.upload()))
 
+
 def main(args=None):
     opts = parseargs(args)
     logging.basicConfig(
-        format = '%(message)s',
-        level = logging.INFO if opts.verbose else logging.WARNING)
+        format='%(message)s',
+        level=logging.INFO if opts.verbose else logging.WARNING)
     try:
         perform_speedtest(opts)
     except Exception as e:
-        if opts.verbose: logging.exception(e)
-        else: logging.error(e)
+        if opts.verbose:
+            logging.exception(e)
+        else:
+            logging.error(e)
+
 
 def pretty_speed(speed):
     units = ['bps', 'Kbps', 'Mbps', 'Gbps']
