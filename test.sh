@@ -44,6 +44,13 @@ for runs in 1 2 4 7; do
     pyspeedtest --runs="$runs"
 done
 
+# use different output formats
+for format in default json xml; do
+	pyspeedtest -f "$format"
+	pyspeedtest --format "$format"
+	pyspeedtest --format="$format"
+done
+
 # test multiple arguments at once and verify output
 pyspeedtest --debug=0 --mode=7 --runs=2 |& grep -qE $'^Using server: .*\nDownload speed: [0-9.]+ (bps|Kbps|Mbps|Gbps)\nUpload speed: [0-9.]+ (bps|Kbps|Mbps|Gbps)$'
 
@@ -72,4 +79,11 @@ for arg in -r --runs; do
     ! output=$(pyspeedtest "${arg}" xxx 2>&1)
     [[ $output = "usage: pyspeedtest [OPTION]...
 pyspeedtest: error: argument -r/--runs: invalid positive int value: 'xxx'" ]]
+done
+
+# test for bad output formats
+for arg in -f --format; do
+	! output=$(pyspeedtest "${arg}" xxx 2>&1)
+	[[ $output = "usage: pyspeedtest [OPTION]...
+pyspeedtest: error: argument -f/--format: output format not supported: 'xxx'" ]]
 done
