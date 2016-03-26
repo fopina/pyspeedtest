@@ -28,7 +28,7 @@ except ImportError:
 
 __program__ = 'pyspeedtest'
 __script__ = os.path.basename(sys.argv[0])
-__version__ = '1.2.4.1'
+__version__ = '1.2.5'
 __description__ = 'Test your bandwidth speed using Speedtest.net servers.'
 
 __supported_formats__ = ('default', 'json', 'xml')
@@ -257,7 +257,6 @@ def parseargs(args):
                 "output format not supported: '%s'" % value)
         return value
 
-
     parser = argparse.ArgumentParser(
         add_help=False,
         description=__description__,
@@ -296,7 +295,7 @@ def parseargs(args):
     parser.add_argument(
         '-f', '--format',
         default='default',
-        help='output format '+str(__supported_formats__),
+        help='output format ' + str(__supported_formats__),
         metavar='F',
         type=format_enum)
     parser.add_argument(
@@ -321,7 +320,7 @@ def perform_speedtest(opts):
 
             print('Using server: %s' % speedtest.host)
 
-            if opts.mode & 4 == 4 and opts.server is not None:
+            if opts.mode & 4 == 4:
                 print('Ping: %d ms' % speedtest.ping())
 
             if opts.mode & 1 == 1:
@@ -331,7 +330,7 @@ def perform_speedtest(opts):
                 print('Upload speed: %s' % pretty_speed(speedtest.upload()))
 
         else:
-            stats = dict( server = speedtest.host )
+            stats = dict(server=speedtest.host)
             if opts.mode & 4 == 4:
                 stats['ping'] = speedtest.ping()
             if opts.mode & 1 == 1:
@@ -352,6 +351,7 @@ def perform_speedtest(opts):
 
     else:
         raise Exception('Output format not supported: %s' % opts.format)
+
 
 def main(args=None):
     opts = parseargs(args)
