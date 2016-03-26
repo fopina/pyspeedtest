@@ -31,6 +31,8 @@ __script__ = os.path.basename(sys.argv[0])
 __version__ = '1.2.4.1'
 __description__ = 'Test your bandwidth speed using Speedtest.net servers.'
 
+__supported_formats__ = ('default', 'json', 'xml')
+
 
 class SpeedTest(object):
 
@@ -249,6 +251,13 @@ def parseargs(args):
             raise argparse.ArgumentTypeError(
                 "invalid positive int value: '%s'" % value)
 
+    def format_enum(value):
+        if value.lower() not in __supported_formats__:
+            raise argparse.ArgumentTypeError(
+                "output format not supported: '%s'" % value)
+        return value
+
+
     parser = argparse.ArgumentParser(
         add_help=False,
         description=__description__,
@@ -285,6 +294,12 @@ def parseargs(args):
         help='use specific server',
         metavar='H')
     parser.add_argument(
+        '-f', '--format',
+        default='default',
+        help='output format '+str(__supported_formats__),
+        metavar='F',
+        type=format_enum)
+    parser.add_argument(
         '-v', '--verbose',
         action='store_true',
         dest='verbose',
@@ -300,15 +315,43 @@ def parseargs(args):
 def perform_speedtest(opts):
     speedtest = SpeedTest(opts.server, opts.debug, opts.runs)
 
-    if opts.mode & 4 == 4 and opts.server is not None:
-        print('Ping: %d ms' % speedtest.ping())
+    if opts.format in __supported_formats__:
 
-    if opts.mode & 1 == 1:
-        print('Download speed: %s' % pretty_speed(speedtest.download()))
+        if opts.format == 'default':
 
-    if opts.mode & 2 == 2:
-        print('Upload speed: %s' % pretty_speed(speedtest.upload()))
+            print('Using server: %s' % speedtest.host)
 
+            if opts.mode & 4 == 4 and opts.server is not None:
+                print('Ping: %d ms' % speedtest.ping())
+
+            if opts.mode & 1 == 1:
+                print('Download speed: %s' % pretty_speed(speedtest.download()))
+
+            if opts.mode & 2 == 2:
+                print('Upload speed: %s' % pretty_speed(speedtest.upload()))
+
+        else:
+            stats = dict( server = speedtest.host )
+            if opts.mode & 4 == 4:
+                stats['ping'] = speedtest.ping()
+            if opts.mode & 1 == 1:
+                stats['download'] = speedtest.download()
+            if opts.mode & 2 == 2:
+                stats['upload'] = speedtest.upload()
+            if opts.format == 'json':
+                from json import dumps
+                print(dumps(stats))
+            elif opts.format == 'xml':
+                from xml.etree.ElementTree import Element, tostring
+                xml = Element('data')
+                for key, val in stats.items():
+                    child = Element(key)
+                    child.text = str(val)
+                    xml.append(child)
+                print(tostring(xml).decode('utf-8'))
+
+    else:
+        raise Exception('Output format not supported: %s' % opts.format)
 
 def main(args=None):
     opts = parseargs(args)
