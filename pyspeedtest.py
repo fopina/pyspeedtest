@@ -354,7 +354,7 @@ def perform_speedtest(opts):
 def main(args=None):
     opts = parseargs(args)
     logging.basicConfig(
-        format='%(message)s',
+        format='%(levelname)s: %(message)s',
         level=logging.INFO if opts.verbose else logging.WARNING)
     try:
         perform_speedtest(opts)
