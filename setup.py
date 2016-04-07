@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-from setuptools import setup
-from pyspeedtest import __program__, __version__
 import sys
+
+from setuptools import setup
+
+from pyspeedtest import __program__, __version__
+
 
 if sys.argv[-1] == 'pub':
     import pypandoc  # quick check
