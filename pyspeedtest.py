@@ -6,7 +6,6 @@ from __future__ import print_function
 import argparse
 import bisect
 import logging
-import os
 import random
 import re
 import string
@@ -27,7 +26,6 @@ except ImportError:
     from urllib.parse import urlencode
 
 __program__ = 'pyspeedtest'
-__script__ = os.path.basename(sys.argv[0])
 __version__ = '1.2.5'
 __description__ = 'Test your bandwidth speed using Speedtest.net servers.'
 
