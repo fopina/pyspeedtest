@@ -19,7 +19,7 @@ if sys.argv[-1] == 'pubtest':
 try:
     import pypandoc
     README = pypandoc.convert(os.path.join(os.path.dirname(__file__), 'README.md'), 'rst')
-except(IOError, ImportError):		
+except(IOError, ImportError):
     README = open('README.md').read()
 
 if sys.argv[-1] == 'readmerst':
