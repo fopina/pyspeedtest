@@ -306,7 +306,7 @@ def parseargs(args):
     parser.add_argument(
         '--version',
         action='version',
-        version='{0} {1}'.format(__program__, __version__))
+        version='%(prog)s ' + __version__)
 
     return parser.parse_args(args)
 
