@@ -41,8 +41,8 @@ setup(
     description='Speedtest.net Python script',
     long_description=README,
     url='https://github.com/fopina/pyspeedtest',
-    download_url='https://github.com/fopina/pyspeedtest/tarball/v%s'
-                % __version__,
+    download_url='https://github.com/fopina/pyspeedtest/tarball/v%s' %
+    __version__,
     author='Filipe Pina',
     author_email='fopina@skmobi.com',
     py_modules=['pyspeedtest'],
