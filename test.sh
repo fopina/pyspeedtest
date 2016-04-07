@@ -9,6 +9,10 @@ set -e
 # enable xtrace
 set -x
 
+# pipeline's return status is the value of the last (rightmost) command to exit
+# with a non-zero status, or zero if all commands exit successfully
+set -o pipefail
+
 # package the project
 python setup.py sdist
 
