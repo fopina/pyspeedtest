@@ -52,7 +52,7 @@ for format in default json xml; do
 done
 
 # test multiple arguments at once and verify output
-pyspeedtest --debug=0 --mode=7 --runs=2 |& grep -qE $'^Using server: .*\nDownload speed: [0-9.]+ (bps|Kbps|Mbps|Gbps)\nUpload speed: [0-9.]+ (bps|Kbps|Mbps|Gbps)$'
+pyspeedtest --debug=0 --mode=7 --runs=2 |& grep -qE $'^Using server: .*\nPing: [0-9]+ ms\nDownload speed: [0-9.]+ (bps|Kbps|Mbps|Gbps)\nUpload speed: [0-9.]+ (bps|Kbps|Mbps|Gbps)$'
 
 # test for bad arguments
 ! pyspeedtest -x
