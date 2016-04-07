@@ -365,6 +365,7 @@ def main(args=None):
             logging.exception(e)
         else:
             logging.error(e)
+        sys.exit(1)
 
 
 def pretty_speed(speed):
