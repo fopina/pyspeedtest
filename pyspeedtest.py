@@ -106,7 +106,7 @@ class SpeedTest(object):
         return total_downloaded * 8000 / total_ms
 
     def uploadthread(self, connection, data):
-        url = '/speedtest/upload.php?x=%s' % random.random()
+        url = '/speedtest/upload.php?x=%d' % randint()
         connection.request('POST', url, data, {
             'Connection': 'Keep-Alive',
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -162,7 +162,7 @@ class SpeedTest(object):
             total_start_time = time()
             connection.request(
                 'GET',
-                '/speedtest/latency.txt?x=%d' % random.random(),
+                '/speedtest/latency.txt?x=%d' % randint(),
                 None,
                 {'Connection': 'Keep-Alive'})
             response = connection.getresponse()
@@ -373,6 +373,12 @@ def pretty_speed(speed):
         speed /= 1024
         unit += 1
     return '%0.2f %s' % (speed, units[unit])
+
+
+def randint():
+    """Return a random 12 digit integer."""
+    return random.randint(100000000000, 999999999999)
+
 
 if __name__ == '__main__':
     main()
