@@ -69,7 +69,7 @@ class SpeedTest(object):
             connection.connect()
             return connection
         except:
-            raise Exception("Error connecting to '%s'" % url)
+            raise Exception("Unable to connect to '%s'" % url)
 
     def downloadthread(self, connection, url):
         connection.request('GET', url, None, {'Connection': 'Keep-Alive'})
