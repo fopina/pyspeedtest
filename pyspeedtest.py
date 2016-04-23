@@ -69,7 +69,7 @@ class SpeedTest(object):
             connection.connect()
             return connection
         except:
-            raise Exception("Unable to connect to '%s'" % url)
+            raise Exception('Unable to connect to %r' % url)
 
     def downloadthread(self, connection, url):
         connection.request('GET', url, None, {'Connection': 'Keep-Alive'})
@@ -247,12 +247,12 @@ def parseargs(args):
             return ivalue
         except ValueError:
             raise argparse.ArgumentTypeError(
-                "invalid positive int value: '%s'" % value)
+                'invalid positive int value: %r' % value)
 
     def format_enum(value):
         if value.lower() not in __supported_formats__:
             raise argparse.ArgumentTypeError(
-                "output format not supported: '%s'" % value)
+                'output format not supported: %r' % value)
         return value
 
     parser = argparse.ArgumentParser(
