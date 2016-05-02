@@ -196,8 +196,9 @@ class SpeedTest(object):
             logging.info('Failed to retrieve coordinates')
             return None
         location = match.groups()
-        logging.info('Your IP: %s\nYour latitude: %s\nYour longitude: %s' %
-                     location)
+        logging.info('Your IP: %s', location[0])
+        logging.info('Your latitude: %s', location[1])
+        logging.info('Your longitude: %s', location[2])
         connection.request(
             'GET', '/speedtest-servers.php?x=%d' % now, None, extra_headers)
         response = connection.getresponse()
