@@ -96,8 +96,8 @@ class SpeedTest(object):
             for thread in threads:
                 thread.join()
                 total_downloaded += thread.downloaded
-                logging.info('Run %d for %s finished',
-                             thread.run_number, current_file)
+                logging.debug('Run %d for %s finished',
+                              thread.run_number, current_file)
         total_ms = (time() - total_start_time) * 1000
         for connection in connections:
             connection.close()
@@ -141,8 +141,8 @@ class SpeedTest(object):
                 threads.append(thread)
             for thread in threads:
                 thread.join()
-                logging.info('Run %d for %d bytes finished',
-                             thread.run_number, thread.uploaded)
+                logging.debug('Run %d for %d bytes finished',
+                              thread.run_number, thread.uploaded)
                 total_uploaded += thread.uploaded
         total_ms = (time() - total_start_time) * 1000
         for connection in connections:
@@ -174,7 +174,7 @@ class SpeedTest(object):
         times.remove(worst)
         total_ms = sum(times) * 250  # * 1000 / number of tries (4) = 250
         connection.close()
-        logging.info('Latency for %s - %d', server, total_ms)
+        logging.debug('Latency for %s - %d', server, total_ms)
         return total_ms
 
     def chooseserver(self):
@@ -215,7 +215,7 @@ class SpeedTest(object):
             bisect.insort_left(sorted_server_list, (distance, server[0]))
         best_server = (999999, '')
         for server in sorted_server_list[:10]:
-            logging.info(server[1])
+            logging.debug(server[1])
             match = re.search(
                 r'http://([^/]+)/speedtest/upload\.php', server[1])
             if match is None:
@@ -356,7 +356,7 @@ def main(args=None):
     opts = parseargs(args)
     logging.basicConfig(
         format='%(levelname)s: %(message)s',
-        level=logging.INFO if opts.verbose else logging.WARNING)
+        level=logging.DEBUG if opts.verbose else logging.WARNING)
     try:
         perform_speedtest(opts)
     except Exception as e:
