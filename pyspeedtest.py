@@ -79,9 +79,9 @@ class SpeedTest(object):
 
     def download(self):
         total_downloaded = 0
-        connections = []
-        for run in range(self.runs):
-            connections.append(self.connect(self.host))
+        connections = [
+            self.connect(self.host) for i in range(self.runs)
+        ]
         total_start_time = time()
         for current_file in SpeedTest.DOWNLOAD_FILES:
             threads = []
@@ -117,9 +117,9 @@ class SpeedTest(object):
         self_thread.uploaded = int(reply.split('=')[1])
 
     def upload(self):
-        connections = []
-        for run in range(self.runs):
-            connections.append(self.connect(self.host))
+        connections = [
+            self.connect(self.host) for i in range(self.runs)
+        ]
 
         post_data = []
         for current_file_size in SpeedTest.UPLOAD_FILES:
