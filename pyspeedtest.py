@@ -5,6 +5,7 @@ from __future__ import print_function
 
 import argparse
 import bisect
+import itertools
 import logging
 import random
 import re
@@ -121,13 +122,9 @@ class SpeedTest(object):
             self.connect(self.host) for i in range(self.runs)
         ]
 
-        post_data = []
-        for current_file_size in SpeedTest.UPLOAD_FILES:
-            values = {
-                'content0': ''.join(
-                    random.choice(SpeedTest.ALPHABET) for i in range(current_file_size))
-            }
-            post_data.append(urlencode(values))
+        post_data = [
+            urlencode({'content0': content(s)}) for s in SpeedTest.UPLOAD_FILES
+        ]
 
         total_uploaded = 0
         total_start_time = time()
@@ -228,6 +225,12 @@ class SpeedTest(object):
             raise Exception('Cannot find a test server')
         LOG.debug('Best server: %s', best_server[1])
         return best_server[1]
+
+
+def content(length):
+    """Return alphanumeric string of indicated length."""
+    cycle = itertools.cycle(SpeedTest.ALPHABET)
+    return ''.join(next(cycle) for i in range(length))
 
 
 def init_logging(loglevel=logging.WARNING):
