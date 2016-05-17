@@ -5,8 +5,8 @@ from __future__ import print_function
 
 import argparse
 import bisect
+import itertools
 import logging
-import os
 import random
 import re
 import string
@@ -27,7 +27,6 @@ except ImportError:
     from urllib.parse import urlencode
 
 __program__ = 'pyspeedtest'
-__script__ = os.path.basename(sys.argv[0])
 __version__ = '1.2.5'
 __description__ = 'Test your bandwidth speed using Speedtest.net servers.'
 
@@ -71,7 +70,7 @@ class SpeedTest(object):
             connection.connect()
             return connection
         except:
-            raise Exception("Error connecting to '%s'" % url)
+            raise Exception('Unable to connect to %r' % url)
 
     def downloadthread(self, connection, url):
         connection.request('GET', url, None, {'Connection': 'Keep-Alive'})
@@ -81,9 +80,9 @@ class SpeedTest(object):
 
     def download(self):
         total_downloaded = 0
-        connections = []
-        for run in range(self.runs):
-            connections.append(self.connect(self.host))
+        connections = [
+            self.connect(self.host) for i in range(self.runs)
+        ]
         total_start_time = time()
         for current_file in SpeedTest.DOWNLOAD_FILES:
             threads = []
@@ -98,17 +97,17 @@ class SpeedTest(object):
             for thread in threads:
                 thread.join()
                 total_downloaded += thread.downloaded
-                logging.info('Run %d for %s finished',
-                             thread.run_number, current_file)
+                LOG.debug('Run %d for %s finished',
+                          thread.run_number, current_file)
         total_ms = (time() - total_start_time) * 1000
         for connection in connections:
             connection.close()
-        logging.info('Took %d ms to download %d bytes',
-                     total_ms, total_downloaded)
+        LOG.info('Took %d ms to download %d bytes',
+                 total_ms, total_downloaded)
         return total_downloaded * 8000 / total_ms
 
     def uploadthread(self, connection, data):
-        url = '/speedtest/upload.php?x=%s' % random.random()
+        url = '/speedtest/upload.php?x=%d' % randint()
         connection.request('POST', url, data, {
             'Connection': 'Keep-Alive',
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -119,17 +118,13 @@ class SpeedTest(object):
         self_thread.uploaded = int(reply.split('=')[1])
 
     def upload(self):
-        connections = []
-        for run in range(self.runs):
-            connections.append(self.connect(self.host))
+        connections = [
+            self.connect(self.host) for i in range(self.runs)
+        ]
 
-        post_data = []
-        for current_file_size in SpeedTest.UPLOAD_FILES:
-            values = {
-                'content0': ''.join(
-                    random.choice(SpeedTest.ALPHABET) for i in range(current_file_size))
-            }
-            post_data.append(urlencode(values))
+        post_data = [
+            urlencode({'content0': content(s)}) for s in SpeedTest.UPLOAD_FILES
+        ]
 
         total_uploaded = 0
         total_start_time = time()
@@ -143,14 +138,14 @@ class SpeedTest(object):
                 threads.append(thread)
             for thread in threads:
                 thread.join()
-                logging.info('Run %d for %d bytes finished',
-                             thread.run_number, thread.uploaded)
+                LOG.debug('Run %d for %d bytes finished',
+                          thread.run_number, thread.uploaded)
                 total_uploaded += thread.uploaded
         total_ms = (time() - total_start_time) * 1000
         for connection in connections:
             connection.close()
-        logging.info('Took %d ms to upload %d bytes',
-                     total_ms, total_uploaded)
+        LOG.info('Took %d ms to upload %d bytes',
+                 total_ms, total_uploaded)
         return total_uploaded * 8000 / total_ms
 
     def ping(self, server=None):
@@ -164,7 +159,7 @@ class SpeedTest(object):
             total_start_time = time()
             connection.request(
                 'GET',
-                '/speedtest/latency.txt?x=%d' % random.random(),
+                '/speedtest/latency.txt?x=%d' % randint(),
                 None,
                 {'Connection': 'Keep-Alive'})
             response = connection.getresponse()
@@ -176,7 +171,7 @@ class SpeedTest(object):
         times.remove(worst)
         total_ms = sum(times) * 250  # * 1000 / number of tries (4) = 250
         connection.close()
-        logging.info('Latency for %s - %d', server, total_ms)
+        LOG.debug('Latency for %s - %d', server, total_ms)
         return total_ms
 
     def chooseserver(self):
@@ -195,11 +190,12 @@ class SpeedTest(object):
             r'<client ip="([^"]*)" lat="([^"]*)" lon="([^"]*)"', reply)
         location = None
         if match is None:
-            logging.info('Failed to retrieve coordinates')
+            LOG.info('Failed to retrieve coordinates')
             return None
         location = match.groups()
-        logging.info('Your IP: %s\nYour latitude: %s\nYour longitude: %s' %
-                     location)
+        LOG.info('Your IP: %s', location[0])
+        LOG.info('Your latitude: %s', location[1])
+        LOG.info('Your longitude: %s', location[2])
         connection.request(
             'GET', '/speedtest-servers.php?x=%d' % now, None, extra_headers)
         response = connection.getresponse()
@@ -216,7 +212,7 @@ class SpeedTest(object):
             bisect.insort_left(sorted_server_list, (distance, server[0]))
         best_server = (999999, '')
         for server in sorted_server_list[:10]:
-            logging.info(server[1])
+            LOG.debug(server[1])
             match = re.search(
                 r'http://([^/]+)/speedtest/upload\.php', server[1])
             if match is None:
@@ -227,8 +223,35 @@ class SpeedTest(object):
                 best_server = (latency, server_host)
         if not best_server[1]:
             raise Exception('Cannot find a test server')
-        logging.info('Best server: %s', best_server[1])
+        LOG.debug('Best server: %s', best_server[1])
         return best_server[1]
+
+
+def content(length):
+    """Return alphanumeric string of indicated length."""
+    cycle = itertools.cycle(SpeedTest.ALPHABET)
+    return ''.join(next(cycle) for i in range(length))
+
+
+def init_logging(loglevel=logging.WARNING):
+    """Initialize program logger."""
+
+    scriptlogger = logging.getLogger(__program__)
+
+    # ensure logger is not reconfigured
+    # it would be nice to use hasHandlers here, but that's Python 3 only
+    if not scriptlogger.handlers:
+
+        # set log level
+        scriptlogger.setLevel(loglevel)
+
+        # log message format
+        fmt = '%(name)s:%(levelname)s: %(message)s'
+
+        # configure terminal log
+        streamhandler = logging.StreamHandler()
+        streamhandler.setFormatter(logging.Formatter(fmt))
+        scriptlogger.addHandler(streamhandler)
 
 
 def parseargs(args):
@@ -249,12 +272,12 @@ def parseargs(args):
             return ivalue
         except ValueError:
             raise argparse.ArgumentTypeError(
-                "invalid positive int value: '%s'" % value)
+                'invalid positive int value: %r' % value)
 
     def format_enum(value):
         if value.lower() not in __supported_formats__:
             raise argparse.ArgumentTypeError(
-                "output format not supported: '%s'" % value)
+                'output format not supported: %r' % value)
         return value
 
     parser = argparse.ArgumentParser(
@@ -306,7 +329,7 @@ def parseargs(args):
     parser.add_argument(
         '--version',
         action='version',
-        version='{0} {1}'.format(__program__, __version__))
+        version='%(prog)s ' + __version__)
 
     return parser.parse_args(args)
 
@@ -355,16 +378,15 @@ def perform_speedtest(opts):
 
 def main(args=None):
     opts = parseargs(args)
-    logging.basicConfig(
-        format='%(message)s',
-        level=logging.INFO if opts.verbose else logging.WARNING)
+    init_logging(logging.DEBUG if opts.verbose else logging.WARNING)
     try:
         perform_speedtest(opts)
     except Exception as e:
         if opts.verbose:
-            logging.exception(e)
+            LOG.exception(e)
         else:
-            logging.error(e)
+            LOG.error(e)
+        sys.exit(1)
 
 
 def pretty_speed(speed):
@@ -374,6 +396,14 @@ def pretty_speed(speed):
         speed /= 1024
         unit += 1
     return '%0.2f %s' % (speed, units[unit])
+
+
+def randint():
+    """Return a random 12 digit integer."""
+    return random.randint(100000000000, 999999999999)
+
+
+LOG = logging.getLogger(__program__)
 
 if __name__ == '__main__':
     main()

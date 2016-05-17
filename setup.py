@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import os
-from setuptools import setup
-from pyspeedtest import __program__, __version__
 import sys
+
+from setuptools import setup
+
+from pyspeedtest import __program__, __version__
+
 
 if sys.argv[-1] == 'pub':
     import pypandoc  # quick check
@@ -19,7 +24,7 @@ if sys.argv[-1] == 'pubtest':
 try:
     import pypandoc
     README = pypandoc.convert(os.path.join(os.path.dirname(__file__), 'README.md'), 'rst')
-except(IOError, ImportError):		
+except (IOError, ImportError):
     README = open('README.md').read()
 
 if sys.argv[-1] == 'readmerst':
@@ -36,8 +41,8 @@ setup(
     description='Speedtest.net Python script',
     long_description=README,
     url='https://github.com/fopina/pyspeedtest',
-    download_url='https://github.com/fopina/pyspeedtest/tarball/v%s'
-                % __version__,
+    download_url='https://github.com/fopina/pyspeedtest/tarball/v%s' %
+    __version__,
     author='Filipe Pina',
     author_email='fopina@skmobi.com',
     py_modules=['pyspeedtest'],
