@@ -27,7 +27,7 @@ except ImportError:
     from urllib.parse import urlencode
 
 __program__ = 'pyspeedtest'
-__version__ = '1.2.5'
+__version__ = '1.2.6'
 __description__ = 'Test your bandwidth speed using Speedtest.net servers.'
 
 __supported_formats__ = ('default', 'json', 'xml')
