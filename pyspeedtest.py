@@ -11,6 +11,7 @@ import random
 import re
 import string
 import sys
+import platform
 
 from math import sqrt
 from threading import currentThread, Thread
@@ -27,13 +28,20 @@ except ImportError:
     from urllib.parse import urlencode
 
 __program__ = 'pyspeedtest'
-__version__ = '1.2.6'
+__version__ = '1.2.7'
 __description__ = 'Test your bandwidth speed using Speedtest.net servers.'
 
 __supported_formats__ = ('default', 'json', 'xml')
 
 
 class SpeedTest(object):
+
+    USER_AGENTS = {
+        'Linux': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:41.0) Gecko/20100101 Firefox/41.0',
+        'Darwin': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:41.0) Gecko/20100101 Firefox/41.0',
+        'Windows': 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0',
+        'Java': 'Java/1.6.0_12',
+    }
 
     DOWNLOAD_FILES = [
         '/speedtest/random350x350.jpg',
@@ -177,10 +185,11 @@ class SpeedTest(object):
     def chooseserver(self):
         connection = self.connect('www.speedtest.net')
         now = int(time() * 1000)
+        # really contribute to speedtest.net OS statistics
+        # maybe they won't block us again...
         extra_headers = {
             'Connection': 'Keep-Alive',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; '
-                          'rv:10.0.2) Gecko/20100101 Firefox/10.0.2',
+            'User-Agent': self.USER_AGENTS.get(platform.system(), self.USER_AGENTS['Linux'])
         }
         connection.request(
             'GET', '/speedtest-config.php?x=%d' % now, None, extra_headers)
